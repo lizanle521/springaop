@@ -10,7 +10,11 @@ public class TestBean {
     private String teststr = "testStr";
 
     public TestBean() {
-
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getTeststr() {

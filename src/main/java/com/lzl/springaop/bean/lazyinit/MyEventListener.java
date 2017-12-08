@@ -16,7 +16,7 @@ public class MyEventListener implements ReaderEventListener {
     public void defaultsRegistered(DefaultsDefinition defaultsDefinition) {
         System.out.println("defaultsRegistered");
         if(defaultsDefinition instanceof DocumentDefaultsDefinition){
-            ((DocumentDefaultsDefinition) defaultsDefinition).setInitMethod("true");
+            ((DocumentDefaultsDefinition) defaultsDefinition).setLazyInit("true");
         }
     }
 

@@ -16,7 +16,7 @@ public class TestMyContext {
         System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
         MyAbstractXmlApplicationContext context = new MyAbstractXmlApplicationContext("classpath*:application.xml");
         TestBean testBean = (TestBean)context.getBean("testBean");
-        testBean.testA();
+        //testBean.testA();
         /**
          * aroundtest before
          beforetest
