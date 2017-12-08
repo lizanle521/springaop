@@ -20,7 +20,8 @@ public class TestBean {
         this.teststr = teststr;
     }
 
-    public void test(){
-        System.out.println("test");
+    public void testA() throws Exception {
+        throw new Exception("");
+        //System.out.println("test");
     }
 }

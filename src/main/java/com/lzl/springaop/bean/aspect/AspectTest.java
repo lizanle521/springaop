@@ -11,33 +11,34 @@ public class AspectTest {
      * execution(modifiers-pattern? ret-type-pattern declaring-type-pattern? name-pattern(param-pattern)throws-pattern?)
      * returning type pattern,name pattern, and parameters pattern是必须的.
      */
-    @Pointcut("execution(public * *.test(..))")
-    public int test() throws Exception {
-        //throw new Exception("a");
-        return 1;
+    @Pointcut("execution(public * *.test*(..))")
+    public int aop() throws Exception {
+        System.out.println("test");
+        throw new Exception("a");
+        //return 1;
     }
 
-    @Before("test()")
+    @Before("aop()")
     public void beforetest(){
         System.out.println("beforetest");
     }
 
-    @After("test()")
+    @After("aop()")
     public void aftertest(){
         System.out.println("aftertest");
     }
 
-    @Around("test()")
+    @Around("aop()")
     public void aroundtest(){
         System.out.println("aroundtest");
     }
 
-    @AfterReturning("test()")
+    @AfterReturning("aop()")
     public void afterreturn(){
         System.out.println("afterreturing");
     }
 
-    @AfterThrowing("test()")
+    @AfterThrowing("aop()")
     public void afterthrowingtest(){
         System.out.println("afterthrowingtest");
     }
