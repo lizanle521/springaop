@@ -21,7 +21,7 @@ public class TestBean {
     }
 
     public void testA() throws Exception {
-        throw new Exception("");
-        //System.out.println("test");
+        //throw new Exception("");
+        System.out.println("test");
     }
 }

@@ -13,8 +13,9 @@
     <!--<context:component-scan base-package="com.lzl.springaop.bean.aspect">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
     </context:component-scan>-->
-    <bean id="testBean" class="com.lzl.springaop.bean.aspect.TestBean"/>
     <bean class="com.lzl.springaop.bean.aspect.AspectTest"/>
+    <bean id="testBean" class="com.lzl.springaop.bean.aspect.TestBean"/>
+
     <!-- 被代理的基类 -->
     <bean id="human" class="com.lzl.springaop.bean.Human"/>
     <!-- 增强 -->

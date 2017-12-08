@@ -1,5 +1,6 @@
 package com.lzl.springaop.bean.aspect;
 
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
 /**
@@ -29,8 +30,11 @@ public class AspectTest {
     }
 
     @Around("aop()")
-    public void aroundtest(){
-        System.out.println("aroundtest");
+    public void aroundtest(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        System.out.println("aroundtest before");
+        proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+        System.out.println("aroundtest afeter");
+
     }
 
     @AfterReturning("aop()")
