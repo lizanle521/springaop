@@ -12,6 +12,10 @@ import java.util.Collections;
  * Created by Lizanle on 2017/12/8.
  */
 public class MyEventListener implements ReaderEventListener {
+    /**
+     * 将环境设置为为延迟初始化
+     * @param defaultsDefinition
+     */
     @Override
     public void defaultsRegistered(DefaultsDefinition defaultsDefinition) {
         System.out.println("defaultsRegistered");
