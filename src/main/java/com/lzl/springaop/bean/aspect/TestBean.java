@@ -10,6 +10,7 @@ public class TestBean {
     private String teststr = "testStr";
 
     public TestBean() {
+
     }
 
     public String getTeststr() {
@@ -21,7 +22,7 @@ public class TestBean {
     }
 
     public void testA() throws Exception {
-        //throw new Exception("");
-        System.out.println("test");
+        throw new Exception("");
+        //System.out.println("test");
     }
 }

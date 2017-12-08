@@ -17,6 +17,21 @@ public class TestMyContext {
         MyAbstractXmlApplicationContext context = new MyAbstractXmlApplicationContext("classpath*:application.xml");
         TestBean testBean = (TestBean)context.getBean("testBean");
         testBean.testA();
+        /**
+         * aroundtest before
+         beforetest
+         test
+         aroundtest afeter
+         aftertest
+         afterreturing
+         */
+
+        /**
+         * aroundtest before
+         beforetest
+         aftertest
+         afterthrowingtest
+         */
         //System.in.read();
     }
 
