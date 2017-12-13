@@ -1,6 +1,7 @@
 package com.lzl.springaop;
 
 import com.lzl.springaop.bean.aspect.TestBean;
+import com.lzl.springaop.bean.aspect.TestBeanIF;
 import com.lzl.springaop.bean.lazyinit.MyAbstractXmlApplicationContext;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ public class TestMyContext {
     public void testMyContext() throws Exception {
         System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
         MyAbstractXmlApplicationContext context = new MyAbstractXmlApplicationContext("classpath*:application.xml");
-        TestBean testBean = (TestBean)context.getBean("testBean");
+        TestBeanIF testBean = (TestBeanIF)context.getBean("testBean");
         //testBean.testA();
         /**
          * aroundtest before

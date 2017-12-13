@@ -3,6 +3,7 @@ package com.lzl.springaop;
 import com.lzl.springaop.bean.Animal;
 import com.lzl.springaop.bean.Human;
 import com.lzl.springaop.bean.aspect.TestBean;
+import com.lzl.springaop.bean.aspect.TestBeanIF;
 import com.lzl.springaop.bean.lazyinit.MyAbstractXmlApplicationContext;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -36,8 +37,8 @@ public class TestSpringAop {
     @Test
     public void testAspect() throws Exception {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath*:application.xml");
-        TestBean testBean = (TestBean)context.getBean("testBean");
-        testBean.testA();
+        TestBeanIF testBean = (TestBeanIF)context.getBean("testBean");
+        testBean.testB();
     }
 
 
