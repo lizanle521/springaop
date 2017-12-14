@@ -44,7 +44,7 @@ public class TestBean implements TestBeanIF, SelfAware {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void testB() throws Exception{
-        testBean.testA();
-        //((TestBean) AopContext.currentProxy()).testA();
+        //testBean.testA();
+        ((TestBeanIF) AopContext.currentProxy()).testA();
     }
 }
