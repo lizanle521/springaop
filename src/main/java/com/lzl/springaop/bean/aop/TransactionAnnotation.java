@@ -14,11 +14,11 @@ public class TransactionAnnotation implements TransactionAnnotationInterface {
 
     @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public void A(){
-        //((TransactionAnnotationInterface)AopContext.currentProxy()).B();
-        this.B();
+        ((TransactionAnnotationInterface)AopContext.currentProxy()).B();
+        //this.B();
     }
 
-    @Transactional(rollbackFor = Exception.class,propagation = Propagation.NEVER)
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRES_NEW)
     public void B(){
 
     }
