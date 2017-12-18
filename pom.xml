@@ -8,10 +8,23 @@
     <artifactId>springaop</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>springaop</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.springframework.version>3.2.14.RELEASE</org.springframework.version>
+        <mybatis></mybatis>
+        <log4j.version>1.2.17</log4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <logback-classic.version>1.1.11</logback-classic.version>
+        <logback-ext-spring.version>0.1.4</logback-ext-spring.version>
+        <log4j-over-slf4j.version>1.7.25</log4j-over-slf4j.version>
+        <!-- Mybatis -->
+        <mybatis.spring.integration>1.2.4</mybatis.spring.integration>
+        <mybatis.version>3.3.1</mybatis.version>
+        <!-- Database access -->
+        <druid.version>1.0.29</druid.version>
+        <mysql.version>5.1.25</mysql.version>
     </properties>
 
 
@@ -28,6 +41,24 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
 
@@ -59,7 +90,66 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-
+    <!--    <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+            <version>${logback-ext-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${log4j-over-slf4j.version}</version>
+        </dependency>
+        <!-- mybatis 整合 spring -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>${mybatis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>${mybatis.spring.integration}</version>
+        </dependency>
+        <!-- 数据库访问 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
     </dependencies>
-
+    <build>
+        <plugins>
+            <!-- maven 编译器插件，解决idea自动重置编译器的bug -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
