@@ -25,6 +25,8 @@
         <!-- Database access -->
         <druid.version>1.0.29</druid.version>
         <mysql.version>5.1.25</mysql.version>
+        <!-- validation-api -->
+        <validation.version>1.1.0.Final</validation.version>
     </properties>
 
 
@@ -136,6 +138,12 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
+        </dependency>
+        <!-- validation  -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${validation.version}</version>
         </dependency>
     </dependencies>
     <build>
