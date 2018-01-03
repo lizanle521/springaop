@@ -10,4 +10,8 @@ public class LongEvent {
     public void setValue(Long value) {
         this.value = value;
     }
+
+    void clear(){
+        value = null;
+    }
 }
