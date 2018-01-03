@@ -2,6 +2,7 @@ package com.lzl.disruptor.demo;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import org.aspectj.weaver.ast.Var;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
@@ -12,6 +13,10 @@ import java.util.concurrent.ThreadFactory;
  * Created by Lizanle on 2018/1/3.
  */
 public class Testdisruptor {
+    /**
+     * 普通写法
+     * @throws InterruptedException
+     */
     @Test
     public void testDisruptor() throws InterruptedException {
         // 为消费者构建线程
@@ -45,6 +50,10 @@ public class Testdisruptor {
         }
     }
 
+    /**
+     * lambada表达式写法
+     * @throws InterruptedException
+     */
     @Test
     public void testDisruptorUseJava8() throws InterruptedException {
         int bufferSize = 2^10;
@@ -61,4 +70,38 @@ public class Testdisruptor {
             Thread.sleep(1000);
         }
     }
+
+    /**
+     * 方法引用
+     * @throws InterruptedException
+     */
+    @Test
+    public void testDisruptorUseMethodReference() throws InterruptedException {
+        int bufferSize = 2^10;
+
+        Disruptor<LongEvent> disruptor = new Disruptor<>(LongEvent::new, bufferSize, Executors.defaultThreadFactory());
+
+        disruptor.handleEventsWith(Testdisruptor::handEvent);
+
+        disruptor.start();
+
+        RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+
+        for (long i = 0; true; i++) {
+            byteBuffer.putLong(0,i);
+            ringBuffer.publishEvent(Testdisruptor::translate,byteBuffer);
+            Thread.sleep(1000);
+        }
+    }
+
+    public static void handEvent(LongEvent longEvent,long sequence,boolean endOfBatch){
+        System.out.println("event:"+longEvent);
+    }
+
+    public static void translate(LongEvent longEvent,long sequence,ByteBuffer byteBuffer){
+        longEvent.setValue(byteBuffer.getLong(0));
+    }
+
 }
