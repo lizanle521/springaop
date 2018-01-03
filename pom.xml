@@ -27,6 +27,7 @@
         <mysql.version>5.1.25</mysql.version>
         <!-- validation-api -->
         <validation.version>1.1.0.Final</validation.version>
+        <disruptor.version>3.3.7</disruptor.version>
     </properties>
 
 
@@ -144,6 +145,16 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>${validation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>4.0.42.Final</version>
         </dependency>
     </dependencies>
     <build>
