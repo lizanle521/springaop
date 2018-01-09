@@ -22,8 +22,8 @@ public class FalseSharing  implements Runnable{
 
     private final static class ViolationLong {
         public volatile long value  = 0L;
-        // 这里我比较疑惑的是，缓存行为64字节，而这个填充只填充了 48个字节。应该填充56个字节才对。
-        public long p1,p2,p3,p4,p5,p6;  // 注释 或者 不注释 决定了是否填充缓存行
+        // 一个对象的引用 4字节，14个对象的引用 56字节。加上 long的8字节，为64字节，恰好填充一个缓存行
+        Object p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd; // 注释 或者 不注释 决定了是否填充缓存行
     }
 
     public static void main(String[] args) throws InterruptedException {
