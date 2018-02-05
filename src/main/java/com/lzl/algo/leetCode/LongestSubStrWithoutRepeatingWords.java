@@ -2,17 +2,19 @@ package com.lzl.algo.leetCode;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+
 /**
  * 最大的没有重复字母的子串的长度
  * Created by Lizanle on 2018/2/5.
  */
 public class LongestSubStrWithoutRepeatingWords {
     /**
-     *
+     *  时间复杂度太大 ，不能满足要求
      * @param s
      * @return
      */
-    public int lengthOfLongestSubstring(String s) {
+    public int lengthOfLongestSubstring1(String s) {
         int i = 0;
         while(true){
             int result = 0;
@@ -43,14 +45,41 @@ public class LongestSubStrWithoutRepeatingWords {
         return false;
     }
 
+
+    /**
+     * 基本思想是  hashmap保存每个字符出现的位置，
+     * 譬如abcdabcd
+     * a->0,b->1,c->2,d->3
+     * a->4 如果a出现了重复的，那么max=4-0长度为4
+     * @param s
+     * @return
+     */
+    public int lengthOfLongestSubstring(String s) {
+        if(s== null || s.length() == 0){
+            return 0;
+        }
+        int result = 0;
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (int i = 0,j=0; i < s.length(); i++) {
+            char currentChar = s.charAt(i);
+            if(map.containsKey(currentChar)){
+                // 如果存在的话，j应该要以currentChar上一次出现的后边的位置来计算距离
+                j = Math.max(j,map.get(currentChar)+1);
+            }
+            map.put(currentChar,i);
+            result = Math.max(result,i-j+1);
+        }
+        return result;
+    }
+
     @Test
     public void test(){
-        System.out.println(lengthOfLongestSubstring("pqkw"));
+        System.out.println(lengthOfLongestSubstring("aab"));
     }
 
     @Test
     public void test1(){
-        System.out.println(lengthOfLongestSubstring("pwwqkww"));
+        System.out.println(lengthOfLongestSubstring1("pwwqkww"));
     }
 
 }
