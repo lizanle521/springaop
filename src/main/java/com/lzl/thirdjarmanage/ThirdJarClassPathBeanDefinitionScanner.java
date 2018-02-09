@@ -115,13 +115,4 @@ public class ThirdJarClassPathBeanDefinitionScanner extends ClassPathBeanDefinit
         return candidates;
     }
 
-    private void processBeanDefinitions(Set<BeanDefinitionHolder> beanDefinitions) {
-        GenericBeanDefinition definition;
-        for (BeanDefinitionHolder holder : beanDefinitions) {
-            definition = (GenericBeanDefinition) holder.getBeanDefinition();
-            if(!definition.getBeanClass().isAssignableFrom(markInterface)){
-                beanDefinitions.remove(definition);
-            }
-        }
-    }
 }
