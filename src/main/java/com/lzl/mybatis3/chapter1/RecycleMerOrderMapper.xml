@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzl.mybatis3.chapter1.RecycleMerOrderMapper">
+  <resultMap id="BaseResultMap" type="com.lzl.mybatis3.chapter1.RecycleMerOrder">
+    <id column="recycle_order_id" jdbcType="BIGINT" property="recycleOrderId" />
+    <result column="mer_id" jdbcType="BIGINT" property="merId" />
+    <result column="classid" jdbcType="VARCHAR" property="classid" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="should_pay_price" jdbcType="DECIMAL" property="shouldPayPrice" />
+    <result column="real_pay_price" jdbcType="DECIMAL" property="realPayPrice" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="lock_num" jdbcType="INTEGER" property="lockNum" />
+    <result column="remain_num" jdbcType="INTEGER" property="remainNum" />
+    <result column="pay_order_id" jdbcType="BIGINT" property="payOrderId" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    recycle_order_id, mer_id, classid, price, should_pay_price, real_pay_price, num, 
+    status, lock_num, remain_num, pay_order_id, pay_time, version, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from recycle_mer_order
+    where recycle_order_id = #{recycleOrderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from recycle_mer_order
+    where recycle_order_id = #{recycleOrderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lzl.mybatis3.chapter1.RecycleMerOrder">
+    insert into recycle_mer_order (recycle_order_id, mer_id, classid, 
+      price, should_pay_price, real_pay_price, 
+      num, status, lock_num, 
+      remain_num, pay_order_id, pay_time, 
+      version, create_time, update_time
+      )
+    values (#{recycleOrderId,jdbcType=BIGINT}, #{merId,jdbcType=BIGINT}, #{classid,jdbcType=VARCHAR}, 
+      #{price,jdbcType=DECIMAL}, #{shouldPayPrice,jdbcType=DECIMAL}, #{realPayPrice,jdbcType=DECIMAL}, 
+      #{num,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, #{lockNum,jdbcType=INTEGER}, 
+      #{remainNum,jdbcType=INTEGER}, #{payOrderId,jdbcType=BIGINT}, #{payTime,jdbcType=TIMESTAMP}, 
+      #{version,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lzl.mybatis3.chapter1.RecycleMerOrder">
+    insert into recycle_mer_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="recycleOrderId != null">
+        recycle_order_id,
+      </if>
+      <if test="merId != null">
+        mer_id,
+      </if>
+      <if test="classid != null">
+        classid,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="shouldPayPrice != null">
+        should_pay_price,
+      </if>
+      <if test="realPayPrice != null">
+        real_pay_price,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="lockNum != null">
+        lock_num,
+      </if>
+      <if test="remainNum != null">
+        remain_num,
+      </if>
+      <if test="payOrderId != null">
+        pay_order_id,
+      </if>
+      <if test="payTime != null">
+        pay_time,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="recycleOrderId != null">
+        #{recycleOrderId,jdbcType=BIGINT},
+      </if>
+      <if test="merId != null">
+        #{merId,jdbcType=BIGINT},
+      </if>
+      <if test="classid != null">
+        #{classid,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="shouldPayPrice != null">
+        #{shouldPayPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="realPayPrice != null">
+        #{realPayPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="lockNum != null">
+        #{lockNum,jdbcType=INTEGER},
+      </if>
+      <if test="remainNum != null">
+        #{remainNum,jdbcType=INTEGER},
+      </if>
+      <if test="payOrderId != null">
+        #{payOrderId,jdbcType=BIGINT},
+      </if>
+      <if test="payTime != null">
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lzl.mybatis3.chapter1.RecycleMerOrder">
+    update recycle_mer_order
+    <set>
+      <if test="merId != null">
+        mer_id = #{merId,jdbcType=BIGINT},
+      </if>
+      <if test="classid != null">
+        classid = #{classid,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="shouldPayPrice != null">
+        should_pay_price = #{shouldPayPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="realPayPrice != null">
+        real_pay_price = #{realPayPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="lockNum != null">
+        lock_num = #{lockNum,jdbcType=INTEGER},
+      </if>
+      <if test="remainNum != null">
+        remain_num = #{remainNum,jdbcType=INTEGER},
+      </if>
+      <if test="payOrderId != null">
+        pay_order_id = #{payOrderId,jdbcType=BIGINT},
+      </if>
+      <if test="payTime != null">
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where recycle_order_id = #{recycleOrderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lzl.mybatis3.chapter1.RecycleMerOrder">
+    update recycle_mer_order
+    set mer_id = #{merId,jdbcType=BIGINT},
+      classid = #{classid,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      should_pay_price = #{shouldPayPrice,jdbcType=DECIMAL},
+      real_pay_price = #{realPayPrice,jdbcType=DECIMAL},
+      num = #{num,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
+      lock_num = #{lockNum,jdbcType=INTEGER},
+      remain_num = #{remainNum,jdbcType=INTEGER},
+      pay_order_id = #{payOrderId,jdbcType=BIGINT},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where recycle_order_id = #{recycleOrderId,jdbcType=BIGINT}
+  </update>
+
+
+</mapper>
