@@ -20,6 +20,7 @@ public class FalseSharing  implements Runnable{
         this.arrayIndex = arrayIndex;
     }
 
+
     private final static class ViolationLong {
         public volatile long value  = 0L;
         // 一个对象的引用 4字节，14个对象的引用 56字节。加上 long的8字节，为64字节，恰好填充一个缓存行
