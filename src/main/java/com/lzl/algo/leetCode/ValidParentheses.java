@@ -41,7 +41,7 @@ public class ValidParentheses {
 
     @Test
     public void test(){
-        boolean valid = isValid("()");
+        boolean valid = isValid(")(");
         System.out.println(valid);
     }
 
