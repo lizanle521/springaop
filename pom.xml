@@ -7,7 +7,10 @@
     <groupId>com.lzl</groupId>
     <artifactId>springaop</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <modules>
+        <module>agent</module>
+    </modules>
+    <packaging>pom</packaging>
     <name>springaop</name>
 
     <properties>
