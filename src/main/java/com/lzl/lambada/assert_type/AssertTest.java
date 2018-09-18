@@ -35,4 +35,17 @@ public class AssertTest {
         List<String> filter = filter(list, s -> s.length() > 2);
         filter.forEach(System.out::println);
     }
+
+    @Test
+    public void runnalbeAndLambda(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("111");
+            }
+        }).start();
+        new Thread(()->{
+            System.out.println(111);
+        }).start();
+    }
 }
