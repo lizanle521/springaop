@@ -13,6 +13,10 @@ public class Book {
     private Year pubDate;
     private double height;
 
+    public Book() {
+
+    }
+
     public Book(String title, List<String> authors, int[] pageCounts, Topic getTopic, Year pubDate, double height) {
         this.title = title;
         this.authors = authors;

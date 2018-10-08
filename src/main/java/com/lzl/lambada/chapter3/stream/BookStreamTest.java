@@ -5,8 +5,12 @@ import com.lzl.lambada.chapter3.Topic;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.time.Year;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -141,4 +145,109 @@ public class BookStreamTest {
         boolean b1 = library.stream().allMatch(b -> b.getHeight() > 10);
         System.out.println(b1);
     }
+
+    @Test
+    public void findAny(){
+        Optional<Book> herma = library.stream().filter(b -> b.getAuthors().contains("Herma"))
+                .findAny();
+        System.out.println(herma.isPresent());
+        System.out.println(herma.orElse(new Book()));
+    }
+
+    @Test
+    public void findFirst(){
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("test.html"));
+            Optional<String> test = bufferedReader.lines().filter(s -> s.contains("test")).findFirst();
+            System.out.println(test);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void summarySatistics(){
+        IntSummaryStatistics intSummaryStatistics = library.stream().mapToInt(b -> IntStream.of(b.getPageCounts()).sum()).summaryStatistics();
+        System.out.println(intSummaryStatistics);
+    }
+
+    @Test
+    public void natureorder(){
+        Optional<String> min = library.stream().map(Book::getTitle).min(Comparator.naturalOrder());
+        System.out.println(min);
+    }
+
+    @Test
+    public void toMap(){
+        Book book3 = new Book("Voss",
+                Arrays.asList("Partric White"),
+                new int[]{478},
+                Topic.FICTION,
+                Year.of(1958),
+                19.8);
+        library.add(book3);
+        Map<String, Year> collect = library.stream().collect(Collectors.toMap(Book::getTitle, Book::getPubDate));
+        System.out.println(collect.toString());
+    }
+
+    @Test
+    public void toMap1(){
+        Book book3 = new Book("Voss",
+                Arrays.asList("Partric White"),
+                new int[]{478},
+                Topic.FICTION,
+                Year.of(1958),
+                19.8);
+        library.add(book3);
+        Map<String, Year> collect = library.stream().collect(Collectors.toMap(Book::getTitle, Book::getPubDate,
+                (x, y) -> x.isAfter(y) ? x : y));
+        System.out.println(collect);
+    }
+
+    /**
+     * 不保证同步
+     */
+    @Test
+    public void forEach(){
+        AtomicLong pageCount = new AtomicLong(0);
+        library.parallelStream().forEach(b->{pageCount.addAndGet(b.getPageCounts().length);});
+        System.out.println(pageCount);
+    }
+
+    /**
+     * 保留顺序并保证同步
+     * 虽然可用但效率不高
+     */
+    @Test
+    public void forEachOrdered(){
+
+    }
+
+    @Test
+    public void sum(){
+        int sum = library.stream().mapToInt(b -> b.getPageCounts().length).sum();
+        System.out.println(sum);
+    }
+
+    /**
+     * 收集与汇聚
+     */
+    @Test
+    public void toList(){
+        List<Book> collect = library.stream().collect(Collectors.toList());
+        System.out.println(collect);
+    }
+
+    /**
+     * 根据主题分类
+     */
+    @Test
+    public void groupingBy(){
+        Map<Topic, List<Book>> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic));
+        System.out.println(collect);
+    }
+
+
+
+
 }
