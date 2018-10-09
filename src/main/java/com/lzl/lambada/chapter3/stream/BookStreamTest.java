@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.time.Year;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -247,7 +248,87 @@ public class BookStreamTest {
         System.out.println(collect);
     }
 
+    @Test
+    public void toOrderMap(){
+        /**
+         * 按照title的字母顺序排序
+         */
+        TreeMap<String, Year> collect = library.stream().collect(Collectors.toMap(Book::getTitle, Book::getPubDate,
+                BinaryOperator.maxBy(Comparator.naturalOrder()), TreeMap::new));
+        System.out.println(collect);
+    }
 
+    @Test
+    public void partitioinBy(){
+        /**
+         * 小说为true,非小说为false
+         */
+        Map<Boolean, List<Book>> collect = library.stream().collect(Collectors.partitioningBy(b -> b.getGetTopic() == Topic.FICTION));
+        System.out.println(collect);
+    }
 
+    /**
+     *
+     */
+    @Test
+    public void groupingByWithmaxBy(){
+        /**
+         * 找到某个主题下作者最多的图书
+         */
+        Map<Topic, Optional<Book>> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic,
+                Collectors.maxBy(Comparator.comparing(b -> b.getAuthors().size()))));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void groupingByWithSummingint(){
+        /**
+         * 找到主题下边对应图书的总的卷数
+         */
+        Map<Topic, Integer> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic,
+                Collectors.summingInt(b -> b.getPageCounts().length)));
+        System.out.println(collect);
+    }
+
+    /**
+     * 找到拥有最多图书的主题
+     */
+    @Test
+    public void mostPupularTopic(){
+        Optional<Topic> topic = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey);
+        System.out.println(topic);
+    }
+
+    @Test
+    public void concatanatedTitleByTopic(){
+        /**
+         * 将对应的主题 和 图书名字链接成的字符串对应起来
+         */
+        Map<Topic, String> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.mapping(Book::getTitle, Collectors.joining(";"))));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void concatTitle(){
+        /**
+         * 所有图书的名字 用字符串链接起来
+         */
+        String collect = library.stream().map(Book::getTitle).collect(Collectors.joining(";"));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void authorsForBooks(){
+        /**
+         * 创建一个字符列表，每个字符串都包含了书的作者的姓名
+         */
+        List<String> collect = library.stream().map(b -> b.getAuthors().stream()
+                .collect(Collectors.joining(",", b.getTitle(), ",")))
+                .collect(Collectors.toList());
+        System.out.println(collect);
+    }
 
 }
