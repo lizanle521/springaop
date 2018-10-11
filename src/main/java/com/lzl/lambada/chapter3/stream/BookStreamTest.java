@@ -258,6 +258,9 @@ public class BookStreamTest {
         System.out.println(collect);
     }
 
+    /**
+     * partitionby 是 groupby的一个便捷方法，他的map的key类型指定为boolean
+     */
     @Test
     public void partitioinBy(){
         /**
@@ -302,12 +305,27 @@ public class BookStreamTest {
         System.out.println(topic);
     }
 
+    /**
+     * 寻找最流行的主题
+     */
+    @Test
+    public void mostPopularTopic(){
+        Optional<Set<Topic>> topics = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.counting()))
+                .entrySet().stream()
+                .collect(Collectors.groupingBy(Map.Entry::getValue, Collectors.mapping(Map.Entry::getKey, Collectors.toSet())))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue);
+        System.out.println(topics);
+    }
+
     @Test
     public void concatanatedTitleByTopic(){
         /**
          * 将对应的主题 和 图书名字链接成的字符串对应起来
          */
-        Map<Topic, String> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.mapping(Book::getTitle, Collectors.joining(";"))));
+        Map<Topic, String> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic,
+                Collectors.mapping(Book::getTitle, Collectors.joining(";"))));
         System.out.println(collect);
     }
 
@@ -330,5 +348,48 @@ public class BookStreamTest {
                 .collect(Collectors.toList());
         System.out.println(collect);
     }
+
+    @Test
+    public void toList1(){
+        Map<String, List<Book>> collect = library.stream().collect(Collectors.groupingBy(Book::getTitle, Collectors.toList()));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void counting(){
+        Map<String, Long> collect = library.stream().collect(Collectors.groupingBy(Book::getTitle, Collectors.counting()));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void mostAuthorByTopic(){
+        Map<Topic, Optional<Book>> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.maxBy(Comparator.comparing(
+                b -> b.getAuthors().size()
+        ))));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void volumeCountByTopic(){
+        Map<Topic, Integer> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.summingInt(b -> b.getPageCounts().length)));
+        System.out.println(collect);
+    }
+
+
+    @Test
+    public void averageHeightByTopic(){
+        Map<Topic, Double> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.averagingDouble(Book::getHeight)));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void volumeStats(){
+        Map<Topic, IntSummaryStatistics> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.summarizingInt(b -> b.getPageCounts().length)));
+       // System.out.println(collect);
+
+        System.out.println(collect.get(Topic.FICTION));
+    }
+
+
 
 }
