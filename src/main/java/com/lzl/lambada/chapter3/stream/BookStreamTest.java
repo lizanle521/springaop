@@ -391,5 +391,11 @@ public class BookStreamTest {
     }
 
 
+    @Test
+    public void collectAndThen(){
+        List<String> collect = library.stream().map(Book::getTitle).collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        System.out.println(collect);
+    }
+
 
 }
