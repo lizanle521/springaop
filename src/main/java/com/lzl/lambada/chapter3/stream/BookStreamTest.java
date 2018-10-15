@@ -11,7 +11,11 @@ import java.io.FileReader;
 import java.time.Year;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -395,6 +399,32 @@ public class BookStreamTest {
     public void collectAndThen(){
         List<String> collect = library.stream().map(Book::getTitle).collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
         System.out.println(collect);
+    }
+
+    /**
+     * 每本书有多少页，每页有多厚
+     * 计算每本书距离书架的初始位置的距离
+     */
+    @Test
+    public void testDispRecord(){
+        Supplier<Deque<DispRecord>> supplier = ArrayDeque::new;
+        BiConsumer<Deque<DispRecord>,Book> accumlator = (dqLeft, b) -> {
+            int disp = dqLeft.isEmpty() ? 0 : dqLeft.getLast().totalDisp();
+            dqLeft.add(new DispRecord(b.getTitle(), disp, Arrays.stream(b.getPageCounts()).sum()));
+        };
+        BinaryOperator<Deque<DispRecord>> combiner = (left,right)->{
+            if(left.isEmpty()) return right;
+            int last = left.getLast().totalDisp();
+            List<DispRecord> collect = right.stream().map(b -> new DispRecord(b.title, b.disp + last, b.lenght)).collect(Collectors.toList());
+            left.addAll(collect);
+            return left;
+        };
+        Function<Deque<DispRecord>,Map<String,Integer>> finisher = (ddr)->ddr.parallelStream().collect(Collectors.toConcurrentMap(dr->dr.title, dr->dr.disp));
+
+        Map<String, Integer> collect = library.stream().collect(Collector.of(supplier, accumlator, combiner, finisher));
+        System.out.println(collect);
+
+
     }
 
 
