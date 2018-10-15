@@ -8,17 +8,16 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.math.BigInteger;
 import java.time.Year;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 public class BookStreamTest {
     List<Book> library = new ArrayList<>();
@@ -424,8 +423,67 @@ public class BookStreamTest {
         Map<String, Integer> collect = library.stream().collect(Collector.of(supplier, accumlator, combiner, finisher));
         System.out.println(collect);
 
-
     }
 
+    /**
+     * 引用流的汇聚
+     *
+     */
+    @Test
+    public void reduceRef(){
+        //找到字母表顺序排第一位的一本书
+        Comparator<Book> comparing = Comparator.comparing(Book::getTitle);
+        Optional<Book> reduce = library.stream().reduce(BinaryOperator.minBy(comparing));
+        System.out.println(reduce);
+
+        //
+        Stream<BigInteger> biStream = LongStream.of(1, 2, 3).mapToObj(BigInteger::valueOf);
+        Optional<BigInteger> reduce1 = biStream.reduce(BigInteger::add);
+        System.out.println(reduce1);
+
+        // 一个流操作以后就会被关闭 ？
+        biStream = LongStream.of(1, 2, 3).mapToObj(BigInteger::valueOf);
+        BigInteger reduce2 = biStream.reduce(BigInteger.ZERO, BigInteger::add);
+        System.out.println(reduce2);
+    }
+
+
+    @Test
+    public void reduceAccumlator(){
+        /**
+         * reduce的 积聚 和 组合
+         */
+        Integer reduce = library.stream().reduce(0, (s, book) -> s + book.getPageCounts().length, Integer::sum);
+        System.out.println(reduce);
+
+        /**
+         * reduce 的map 与 reduce
+         */
+        int sum = library.stream().mapToInt(b -> b.getPageCounts().length).sum();
+        System.out.println(sum);
+    }
+
+    public Deque<DispRecord> wrap(DispRecord dispRecord){
+        Deque<DispRecord> ddr = new ArrayDeque<>();
+        ddr.add(dispRecord);
+        return ddr;
+    }
+
+    @Test
+    public void testMapReduce(){
+        BinaryOperator<Deque<DispRecord>> combiner = (left,right)->{
+            if(left.isEmpty()) return right;
+            int last = left.getLast().totalDisp();
+            List<DispRecord> collect = right.stream().map(b -> new DispRecord(b.title, b.disp + last, b.lenght)).collect(Collectors.toList());
+            left.addAll(collect);
+            return left;
+        };
+        ConcurrentMap<String, Integer> collect = library.stream().map(DispRecord::new)
+                .map(this::wrap)
+                .reduce(combiner).orElseGet(ArrayDeque::new)
+                .stream()
+                .collect(Collectors.toConcurrentMap(dr -> dr.title, dr -> dr.disp));
+        System.out.println(collect);
+    }
 
 }

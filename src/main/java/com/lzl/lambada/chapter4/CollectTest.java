@@ -7,10 +7,12 @@ import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.OptionalInt;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.IntStream;
 
 /**
  * 自定义收集器
@@ -102,4 +104,35 @@ public class CollectTest {
         System.out.println(deques1);
 
     }
+
+    /**
+     * 原生值的汇聚
+     */
+    @Test
+    public void sum(){
+        IntStream intStream = IntStream.of(1, 2, 3);
+        int sum = intStream.sum();
+        System.out.println(sum);
+    }
+
+
+    /**
+     * 原生流的汇聚
+     */
+    @Test
+    public void reduce(){
+        int reduce = IntStream.of(1, 2, 3).reduce(0, (a, b) -> a + b);
+        System.out.println(reduce);
+
+        OptionalInt reduce1 = IntStream.of(1, 2, 3).reduce((a, b) -> a + b);
+        System.out.println(reduce1);
+
+        /**
+         * 计算阶乘
+         */
+        int reduce2 = IntStream.rangeClosed(1, 10).reduce(1, (a, b) -> a * b);
+        System.out.println(reduce2);
+    }
+
+
 }

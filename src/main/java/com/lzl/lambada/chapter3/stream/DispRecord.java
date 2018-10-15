@@ -1,5 +1,9 @@
 package com.lzl.lambada.chapter3.stream;
 
+import com.lzl.lambada.chapter3.Book;
+
+import java.util.stream.IntStream;
+
 public class DispRecord {
     /**
      * 书的名称
@@ -14,6 +18,10 @@ public class DispRecord {
         this.title = title;
         this.disp = disp;
         this.lenght = lenght;
+    }
+
+    public DispRecord(Book book){
+        this(book.getTitle(),0, IntStream.of(book.getPageCounts()).sum());
     }
 
     int totalDisp(){
