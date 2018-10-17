@@ -374,8 +374,14 @@ public class BookStreamTest {
 
     @Test
     public void volumeCountByTopic(){
+        //计算每一个主题下的卷宗的数量 的两种方法
         Map<Topic, Integer> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.summingInt(b -> b.getPageCounts().length)));
         System.out.println(collect);
+
+        //
+        Map<Topic, Integer> collect1 = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.reducing(0, b -> b.getPageCounts().length, Integer::sum)));
+        System.out.println(collect1);
+
     }
 
 
@@ -485,5 +491,30 @@ public class BookStreamTest {
                 .collect(Collectors.toConcurrentMap(dr -> dr.title, dr -> dr.disp));
         System.out.println(collect);
     }
+
+    @Test
+    public void testReducing(){
+        // 找出每个主题中高度最高的书
+        Comparator<Book> comparing = Comparator.comparing(Book::getHeight);
+        Map<Topic, Optional<Book>> collect = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.reducing(BinaryOperator.maxBy(comparing))));
+        System.out.println(collect);
+
+        // 每个主题下书本的数量
+        Map<Topic, Long> collect1 = library.stream().collect(Collectors.groupingBy(Book::getGetTopic, Collectors.reducing(0L, b -> 1L, Long::sum)));
+        System.out.println(collect1);
+    }
+
+    @Test
+    public void testRangeClosed(){
+        Stream<String> stringStream = library.stream().map(b -> {
+            int[] pageCounts = b.getPageCounts();
+            return IntStream.rangeClosed(1, pageCounts.length)
+                    .mapToObj(i -> i + ":" + pageCounts[i - 1]).collect(Collectors.joining(",", b.getTitle() + ";", ","));
+
+        });
+        stringStream.forEach(System.out::println);
+    }
+
+
 
 }
