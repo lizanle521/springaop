@@ -2,8 +2,13 @@ package com.lzl.lambada.chapter5;
 
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * 起始流
@@ -29,5 +34,22 @@ public class StreamTest {
         System.out.println();
         // 不包含 5
          IntStream.range(1, 5).forEach(System.out::print);
+    }
+
+    @Test
+    public void printFileInfo(){
+        /**
+         * 打印当前目录下的所有文件
+         */
+        File file = new File(".");
+        Path path = file.toPath();
+        try (Stream<Path> walk = Files.walk(path)) {
+            walk.map(Path::toFile)
+                    .filter(File::isFile)
+                    .map(f->f.getAbsolutePath()+"  "+f.length())
+                    .forEachOrdered(System.out::println);
+        }catch (IOException e){
+
+        }
     }
 }
