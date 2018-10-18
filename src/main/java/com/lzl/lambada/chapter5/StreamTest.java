@@ -4,11 +4,15 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * 起始流
@@ -51,5 +55,47 @@ public class StreamTest {
         }catch (IOException e){
 
         }
+
+        // 拋出受檢查的異常
+        //Files.list(path)
+        //        .flatMap(Files::lines)
+        //        .forEachOrdered(System.out::println);
+
+         file = new File("dir");
+         path = file.toPath();
+        try( Stream<Path> list = Files.list(path);) {
+            list.peek(p->{
+                try {
+                    Files.lines(p);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).forEach(System.out::println);
+
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        file = new File(".");
+        path = file.toPath();
+        try(Stream<Path> list = Files.list(path);) {
+            list.flatMap(p->{
+                Stream<String> lines;
+                try {
+                    lines = Files.lines(p);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    lines = Stream.of("exception"+e.toString());
+                }
+                return lines;
+            }).forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void splitor(){
+
     }
 }
