@@ -3,6 +3,7 @@ package com.lzl.java.java_type;
 import org.junit.Test;
 
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +79,18 @@ public class ParameterizedTypeTest<T> {
             GenericDeclaration genericDeclaration = typeVariable.getGenericDeclaration();
 
             System.out.println(genericDeclaration);
+        }
+    }
+
+    @Test
+    public void typeEarase() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<String> list = new ArrayList<>();
+        list.add("11");
+        list.add("22");
+        // 可以通过反射绕开泛型限制
+        list.getClass().getMethod("add",Object.class).invoke(list,33);
+        for (String s : list) {
+            System.out.println(s); // 报错  java.lang.Integer cannot be cast to java.lang.String
         }
     }
 }
