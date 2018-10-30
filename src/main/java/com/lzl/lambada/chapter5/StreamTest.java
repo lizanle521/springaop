@@ -5,11 +5,11 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.IntUnaryOperator;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -97,5 +97,32 @@ public class StreamTest {
     @Test
     public void splitor(){
 
+    }
+
+    @Test
+    public void grepH(){
+        // 实现grep -RH的功能
+        //  递归打印当前目录下文件名匹配 java这个正则的文件中的任意含有 test字符的行
+        File file = new File(".");
+        Path path = file.toPath();
+        Pattern compile = Pattern.compile("test");
+        // 匹配文件名则用 glob, 匹配正则表达式则用 regex
+        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("regex:"+"java");
+        try(Stream<Path> walk = Files.walk(path)){
+            walk.filter(Files::isRegularFile)
+                    .filter(pathMatcher::matches)
+                    .flatMap(path1->{
+                        try {
+                            return Files.readAllLines(path1).stream();
+                        } catch (IOException e) {
+                            return Stream.of("");
+                        }
+                    })
+                    .filter(line -> !line.isEmpty())
+                    .filter(line->compile.matcher(line).find())
+                    .forEach(System.out::println);
+        }catch (Exception e){
+
+        }
     }
 }
