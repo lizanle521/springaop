@@ -101,7 +101,7 @@ public class StreamTest {
 
     @Test
     public void grepH(){
-        // 实现grep -RH的功能
+        // 实现grep -Rh的功能
         //  递归打印当前目录下文件名匹配 java这个正则的文件中的任意含有 test字符的行
         File file = new File(".");
         Path path = file.toPath();
@@ -124,5 +124,32 @@ public class StreamTest {
         }catch (Exception e){
 
         }
+    }
+
+    @Test
+    public void testGrepRH(){
+        // 递归打印当前文件夹下 匹配java文件名的包含 test字符的行，并以文件名为前缀
+        Path path = new File(".").toPath();
+        Pattern pattern = Pattern.compile("test");
+        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("regex:test.html");
+
+        try(Stream<Path> walk = Files.walk(path)){
+            walk.filter(Files::isRegularFile)
+                    .filter(pathMatcher::matches)
+                    .flatMap(p->{
+                        try {
+                            return Files.readAllLines(p).stream()
+                                    .filter(l -> pattern.matcher(l).find())
+                                    .map(l -> p + ":" + l);
+                        }catch (Exception e){
+                            return Stream.of("");
+                        }
+                    })
+                    .filter(l->!l.isEmpty())
+                    .forEach(System.out::println);
+        }catch (Exception e){
+
+        }
+
     }
 }
