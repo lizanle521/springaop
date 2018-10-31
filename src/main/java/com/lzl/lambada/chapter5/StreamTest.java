@@ -152,4 +152,37 @@ public class StreamTest {
         }
 
     }
+
+    @Test
+    public void testGrepRC(){
+        // 递归打印出符合 .*test.* 的的文件名中 任何包含 test字符的行数
+        Path path = new File(".").toPath();
+        Pattern pattern = Pattern.compile("test");
+        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("regex:.*test.*");
+
+        try(Stream<Path> walk = Files.walk(path)) {
+            walk.filter(Files::isRegularFile)
+                    .filter(pathMatcher::matches)
+                    .map(p->{
+                        try {
+                            long count = Files.readAllLines(p).stream()
+                                    .filter(l -> pattern.matcher(l).find())
+                                    .count();
+                            return count == 0 ? "" : p+":"+count;
+                        } catch (IOException e) {
+                            return "";
+                        }
+                    })
+                    .filter(l->!l.isEmpty())
+                    .forEach(System.out::println);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGrepB(){
+        // 递归打印出符合 .*test.* 的的文件名中 任何包含 test字符的行，且在行之前打印这个行在文件中的位移
+
+    }
 }
