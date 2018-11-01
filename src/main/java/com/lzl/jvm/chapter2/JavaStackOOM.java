@@ -27,13 +27,11 @@ public class JavaStackOOM {
         }
     }
 
-    @Test
-    public void testStackLeakByThread(){
-        stackLeakByThread();
-    }
+
 
     public static void main(String[] args) {
         JavaStackOOM javaStackOOM = new JavaStackOOM();
         javaStackOOM.stackLeakByThread();
     }
+
 }
