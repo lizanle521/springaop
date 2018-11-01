@@ -6,7 +6,7 @@ import org.junit.Test;
  * 栈溢出 -Xss128k  951
  *        -Xss256k  3221
  */
-public class JavaStackOOM {
+public class JavaStackSOF {
     private static int a = 1;
 
     public void stackLeak(){
