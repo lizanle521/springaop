@@ -9,9 +9,15 @@ import org.junit.Test;
  * -Xss2m 
  */
 public class JavaStackOOM {
+    private int count = 0;
     private void dontStop(){
         while (true){
-           
+            // 加上这个 Thread.sleep函数就可以防止机器假死，因为不加的话大量占用了cpu
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -23,7 +29,10 @@ public class JavaStackOOM {
                     dontStop();
                 }
             });
+            thread.setDaemon(true);
             thread.start();
+            count ++;
+            System.out.println(count);
         }
     }
 
