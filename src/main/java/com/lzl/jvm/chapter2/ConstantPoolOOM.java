@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * -Xmx2m -Xms2m
+ * -XX:-UseGCOverheadLimit
  */
 public class ConstantPoolOOM {
     public static void main(String[] args) {
