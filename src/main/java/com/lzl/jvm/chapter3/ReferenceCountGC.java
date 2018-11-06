@@ -3,7 +3,7 @@ package com.lzl.jvm.chapter3;
 import org.junit.Test;
 
 /**
- * -verbose:gc
+ * -ea -verbose:gc -XX:+PrintGCDetails -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+PrintGCDateStamps  -Xloggc:gcc.log
  */
 public class ReferenceCountGC {
     public Object instance = null;
