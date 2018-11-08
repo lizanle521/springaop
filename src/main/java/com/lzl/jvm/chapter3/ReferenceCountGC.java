@@ -3,7 +3,7 @@ package com.lzl.jvm.chapter3;
 import org.junit.Test;
 
 /**
- * -ea -verbose:gc -XX:+PrintGCDetails -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+PrintGCDateStamps  -Xloggc:gcc.log
+ * -ea -verbose:gc -XX:+PrintGCDetails -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC  -Xloggc:gcc.log
  */
 public class ReferenceCountGC {
     public Object instance = null;
@@ -16,8 +16,8 @@ public class ReferenceCountGC {
         ReferenceCountGC objB = new ReferenceCountGC();
         objA.instance = objA;
         objB.instance = objB;
-         objA = null;
-         objB = null;
+       //  objA = null;
+       //  objB = null;
 
             //ReferenceCountGC a = null;
            // ReferenceCountGC b = null;
