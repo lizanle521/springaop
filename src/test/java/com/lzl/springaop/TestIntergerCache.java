@@ -8,11 +8,16 @@ import org.junit.Test;
 public class TestIntergerCache {
     @Test
     public void testIntegerCache(){
-        Integer a = 100,b=100;
-        System.out.println(a == b);
-        Integer c = 10000,d = 10000;
-        int f = 10000;
-        System.out.println(c == d);
-        System.out.println(f == c);
+//        Integer a = 100,b=100;
+//        System.out.println(a == b);
+//        Integer c = 10000,d = 10000;
+//        int f = 10000;
+//        System.out.println(c == d);
+//        System.out.println(f == c);
+
+        Integer z = new Integer(0);
+        Integer y = new Integer(0);
+        y ++;
+        System.out.println(z == y);
     }
 }
