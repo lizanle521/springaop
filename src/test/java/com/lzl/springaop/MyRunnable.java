@@ -15,6 +15,7 @@ public class MyRunnable implements Runnable {
     @Override
     public void run() {
         while (true){
+
             synchronized (i){
                 if(i<100){
                     i++;//这里切换了对象  i++ =>  i = Integer.valueOf(i.intValue() + 1);
@@ -23,9 +24,7 @@ public class MyRunnable implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    //list.add(Thread.currentThread().getName() +i);
-                    System.out.println(Thread.currentThread().getName()+" --i : " + i );
-                    //logger.info(Thread.currentThread().getId()+" i : " + i);
+                    System.out.println(Thread.currentThread().getName()+" --i : " +  + i );
                 }else{
                     break;
                 }
