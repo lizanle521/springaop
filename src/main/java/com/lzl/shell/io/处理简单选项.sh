@@ -1,5 +1,5 @@
 #!/bin/bash
-# 处理选项，while语法
+# 处理选项，while语法这个中括号 左右都要有空格。不然报错
 while [ -n "$1" ]
 do
     case "$1" in
