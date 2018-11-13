@@ -1,4 +1,4 @@
-package com.lzl.shell.io;
+package com.lzl.jvm.chapter3;
 
 public class FinalizeEscapeGC {
     public static FinalizeEscapeGC HOOK = null;
