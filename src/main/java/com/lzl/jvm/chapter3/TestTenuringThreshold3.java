@@ -1,7 +1,8 @@
 package com.lzl.jvm.chapter3;
 
 /**
- * -verbose:gc -Xms20m -Xmx20m -Xmn10m -XX:+UseSerialGC -XX:SurvivorRatio=8 -XX:+PrintGCDetails -XX:MaxTenuringThreshold=15 -XX:+PrintTenuringDistribution -XX:+PrintHeapAtGC
+ * -verbose:gc -Xms20m -Xmx20m -Xmn10m -XX:+UseSerialGC -XX:SurvivorRatio=8 -XX:+PrintGCDetails -XX:+PrintGCDateStamps
+ * -XX:MaxTenuringThreshold=15 -XX:+PrintTenuringDistribution -XX:+PrintHeapAtGC -Xloggc:gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=512
  *
  * Desired survivor size gc日志出现这个，并且打印出  new threshold 1 (max 15)，说明 survivor 区空间不足，导致对象直接提升到老年代，那么就会出现过早提升
  * 过早提升导致的问题就是 很多不到年龄的对象提升到老年代，导致老年代空间不足。会出现 promotion faild ,导致出现 full gc,full gc延时更长，吞吐量下降，对用户造成影响
@@ -14,8 +15,8 @@ public class TestTenuringThreshold3 {
         a2 = new byte[_1mb/4]; // a1 + a2 大于 survivor空间大小的一半
         a3 = new byte[4*_1mb];
         a4 = new byte[4*_1mb];
-        //a4 = null;
-        //a4 = new byte[4*_1mb];
+        a4 = null;
+        a4 = new byte[4*_1mb];
         //Thread.currentThread().join(60*60*60*20L);
     }
 
