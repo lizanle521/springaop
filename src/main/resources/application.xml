@@ -15,6 +15,8 @@
     </context:component-scan>-->
     <bean class="com.lzl.springaop.bean.aspect.SelfInjectionBeanPostProcessor"/>
     <bean class="com.lzl.springaop.bean.aspect.AspectTest"/>
+    <bean class="com.lzl.springaop.bean.aspect.SelftBeanDefinitionRegistryPostProcessor"/>
+    <bean class="com.lzl.springaop.bean.aspect.SelfBeanFactoryPostProcessor"/>
     <bean id="testBean" class="com.lzl.springaop.bean.aspect.TestBean"/>
 
     <!-- 被代理的基类 -->
