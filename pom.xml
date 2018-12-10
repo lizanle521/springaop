@@ -149,6 +149,20 @@
             <artifactId>validation-api</artifactId>
             <version>${validation.version}</version>
         </dependency>
+        <!-- validation  -->
+        <!-- 性能基准测试 -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>1.19</version>
+        </dependency>
+        <!-- 性能基准测试 -->
+
         <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
