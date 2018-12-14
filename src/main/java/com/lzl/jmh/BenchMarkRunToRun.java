@@ -30,7 +30,7 @@ public class BenchMarkRunToRun {
 
         @Setup
         public void setup(){
-            // 这里的取值 为 0-1000. 最后的结果预期应该为 500ms
+            // 这里的取值 为 0-1000. 最后的结果平均预期应该为 500ms
             sleepTime = (long) (Math.random()*1000);
         }
     }
