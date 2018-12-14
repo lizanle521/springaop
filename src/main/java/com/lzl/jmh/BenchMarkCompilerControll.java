@@ -32,6 +32,9 @@ public class BenchMarkCompilerControll {
         // 这个方法有意留空
     }
 
+    /**
+     * 可以内联也要跳过
+     */
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public void target_dontInline(){
 
@@ -46,6 +49,9 @@ public class BenchMarkCompilerControll {
 
     }
 
+    /**
+     * 让方法不要编译，临时解释执行
+     */
     @CompilerControl(CompilerControl.Mode.EXCLUDE)
     public void target_exclude(){
 
