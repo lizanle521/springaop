@@ -22,6 +22,10 @@ public class BenchMarkLevelInvocation {
 
     @State(Scope.Benchmark)
     public static class NormalStat {
+        public NormalStat() {
+            System.out.println("NormalStat init");
+        }
+
         ExecutorService executorService;
 
         @Setup(Level.Trial)
@@ -49,6 +53,10 @@ public class BenchMarkLevelInvocation {
 
     @State(Scope.Thread)
     public static class Scrach {
+        public Scrach() {
+            System.out.println("scrach init");
+        }
+
         private double p;
         public double doWork(){
             double log = Math.log(p);
