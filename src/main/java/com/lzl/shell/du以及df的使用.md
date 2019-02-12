@@ -1,6 +1,6 @@
 #### df 
 df命令 我们用来查看挂载的磁盘空间是否足够
-```jshelllanguage
+```shel
 [lizanle@iZbp194538v1d54os0gk0bZ monitorapi.uuuwin.com]$ df -h
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/vda1        40G   21G   17G  56% /
@@ -15,7 +15,7 @@ tmpfs           783M     0  783M   0% /run/user/1008
 使用 -h 是能让 df 的结果以人性化的结果展示。 df是 disk free的简写
 #### du
 du命令 我们用来查看某个文件夹的大小  du 是 disk used的简写
-```jshelllanguage
+```shell
 [lizanle@iZbp194538v1d54os0gk0bZ monitorapi.uuuwin.com]$ du -a -h
 4.0K    ./monitor_api_error.log.2019-01-31
 4.0K    ./monitor_api_error.log
