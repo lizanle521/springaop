@@ -5,8 +5,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd ">
-    <dubbo:application name="dubbo-demo"/>
+    <!-- 消费者的应用名称，用来追踪依赖关系。（不是一个匹配标准）不要和提供者一样 -->
+    <dubbo:application name="dubbo-demo-consumer"/>
+    <!-- 去registry 发现服务-->
     <dubbo:registry address="multicast://224.1.1.1"/>
+    <!-- 用来追踪依赖关系，设置通用属性 -->
     <dubbo:consumer id="demo-consumer" check="false" />
+    <!-- 为远程服务生成一个本地代理，然后就可以像使用本地接口一样使用demoService -->
     <dubbo:reference id="demoService" interface="com.lzl.dubbodemo.DemoService" consumer="demo-consumer"/>
 </beans>
