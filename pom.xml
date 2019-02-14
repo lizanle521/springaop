@@ -9,6 +9,10 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>agent</module>
+        <module>dubboguide</module>
+        <module>dubbodemoapi</module>
+        <module>dubbodemoprovider</module>
+        <module>dubbodemoconsumer</module>
     </modules>
     <packaging>pom</packaging>
     <name>springaop</name>
