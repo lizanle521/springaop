@@ -10,6 +10,7 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
+        System.setProperty("java.net.preferIPv4Stack", "true");
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application.xml");
         context.start();
         System.in.read();
