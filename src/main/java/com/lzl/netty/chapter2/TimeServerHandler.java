@@ -1,9 +1,6 @@
 package com.lzl.netty.chapter2;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
@@ -21,11 +18,11 @@ public class TimeServerHandler implements Runnable {
     @Override
     public void run() {
         BufferedReader in = null;
-        PrintWriter out = null;
+        PrintStream out = null;
 
         try {
             in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-            out = new PrintWriter(this.socket.getOutputStream());
+            out = new PrintStream(this.socket.getOutputStream(),true);
 
             String currentTime = null;
             String body = null;
