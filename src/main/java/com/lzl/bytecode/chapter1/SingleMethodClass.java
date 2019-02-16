@@ -8,22 +8,22 @@ public class SingleMethodClass {
     }
 }
 /**
- "C:\Program Files\Java\jdk1.8.0_73\bin\javap.exe" -v -l -p -s -c com.lzl.bytecode.chapter1.SingleMethodClass
- Classfile /F:/ideaworkspace/springaop/target/classes/com/lzl/bytecode/chapter1/SingleMethodClass.class
+ "C:\Program Files\Java\jdk1.8.0_73\bin\javap.exe" -v -l -p -s -c com.lzl.bytecode.nettyinaction.SingleMethodClass
+ Classfile /F:/ideaworkspace/springaop/target/classes/com/lzl/bytecode/nettyinaction/SingleMethodClass.class
  Last modified 2018-9-18; size 589 bytes
  MD5 checksum cdbeb18e29387e8b6726c9d7a53a0262
  Compiled from "SingleMethodClass.java"
- public class com.lzl.bytecode.chapter1.SingleMethodClass
+ public class com.lzl.bytecode.nettyinaction.SingleMethodClass
  minor version: 0
  major version: 52
  flags: ACC_PUBLIC, ACC_SUPER
  Constant pool:
  #1 = Methodref          #7.#21         // java/lang/Object."<init>":()V
- #2 = Fieldref           #6.#22         // com/lzl/bytecode/chapter1/SingleMethodClass.a:I
+ #2 = Fieldref           #6.#22         // com/lzl/bytecode/nettyinaction/SingleMethodClass.a:I
  #3 = Fieldref           #23.#24        // java/lang/System.out:Ljava/io/PrintStream;
  #4 = String             #25            // 111
  #5 = Methodref          #26.#27        // java/io/PrintStream.println:(Ljava/lang/String;)V
- #6 = Class              #28            // com/lzl/bytecode/chapter1/SingleMethodClass
+ #6 = Class              #28            // com/lzl/bytecode/nettyinaction/SingleMethodClass
  #7 = Class              #29            // java/lang/Object
  #8 = Utf8               a
  #9 = Utf8               I
@@ -33,7 +33,7 @@ public class SingleMethodClass {
  #13 = Utf8               LineNumberTable
  #14 = Utf8               LocalVariableTable
  #15 = Utf8               this
- #16 = Utf8               Lcom/lzl/bytecode/chapter1/SingleMethodClass;
+ #16 = Utf8               Lcom/lzl/bytecode/nettyinaction/SingleMethodClass;
  #17 = Utf8               test
  #18 = Utf8               ()I
  #19 = Utf8               SourceFile
@@ -45,7 +45,7 @@ public class SingleMethodClass {
  #25 = Utf8               111
  #26 = Class              #33            // java/io/PrintStream
  #27 = NameAndType        #34:#35        // println:(Ljava/lang/String;)V
- #28 = Utf8               com/lzl/bytecode/chapter1/SingleMethodClass
+ #28 = Utf8               com/lzl/bytecode/nettyinaction/SingleMethodClass
  #29 = Utf8               java/lang/Object
  #30 = Utf8               java/lang/System
  #31 = Utf8               out
@@ -58,7 +58,7 @@ public class SingleMethodClass {
  descriptor: I
  flags: ACC_PUBLIC
 
- public com.lzl.bytecode.chapter1.SingleMethodClass();
+ public com.lzl.bytecode.nettyinaction.SingleMethodClass();
  descriptor: ()V
  flags: ACC_PUBLIC
  Code:
@@ -74,7 +74,7 @@ public class SingleMethodClass {
  line 4: 4
  LocalVariableTable:
  Start  Length  Slot  Name   Signature
- 0      10     0  this   Lcom/lzl/bytecode/chapter1/SingleMethodClass;
+ 0      10     0  this   Lcom/lzl/bytecode/nettyinaction/SingleMethodClass;
 
  public int test();
  descriptor: ()I
@@ -92,7 +92,7 @@ public class SingleMethodClass {
  line 7: 8
  LocalVariableTable:
  Start  Length  Slot  Name   Signature
- 0      13     0  this   Lcom/lzl/bytecode/chapter1/SingleMethodClass;
+ 0      13     0  this   Lcom/lzl/bytecode/nettyinaction/SingleMethodClass;
  }
  SourceFile: "SingleMethodClass.java"
  **/

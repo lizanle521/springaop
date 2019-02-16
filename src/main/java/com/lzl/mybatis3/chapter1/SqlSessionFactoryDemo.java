@@ -53,6 +53,6 @@ public class SqlSessionFactoryDemo {
         Reader reader = Resources.getResourceAsReader(resource);
         SqlSessionFactory build = new SqlSessionFactoryBuilder().build(reader,"test");
         SqlSession sqlSession = build.openSession();
-        Object o = sqlSession.selectOne("com.lzl.mybatis3.chapter1.RecycleMerOrderMapper.selectByPrimaryKey", 1L);
+        Object o = sqlSession.selectOne("com.lzl.mybatis3.nettyinaction.RecycleMerOrderMapper.selectByPrimaryKey", 1L);
     }
 }

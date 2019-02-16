@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter1;
+package com.lzl.netty.nettyinaction;
 
 import java.io.BufferedReader;
 import java.io.IOException;

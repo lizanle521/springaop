@@ -1,11 +1,10 @@
-package com.lzl.netty.chapter1;
+package com.lzl.netty.nettyinaction;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -71,8 +70,6 @@ public class ConnectExample {
 
     @Test
     public void test(){
-        NioEventLoopGroup group = new NioEventLoopGroup();
-        group.next().register(CHANNEL_FROM_SOMEWHERE);
         connect();
     }
 }
