@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter2.aio;
+package com.lzl.netty.chapter2_aionio.aio;
 
 /**
  * Nio 的异步套接字是真正的异步非阻塞编程，对于unix网络编程中的事件驱动aio,它不需要通过多路复用器对注册的通道进行轮询即可

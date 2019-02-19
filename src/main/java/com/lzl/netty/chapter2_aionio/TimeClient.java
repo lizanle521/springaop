@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter2;
+package com.lzl.netty.chapter2_aionio;
 
 import java.io.BufferedReader;
 import java.io.IOException;

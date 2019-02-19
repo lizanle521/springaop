@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter2.nio;
+package com.lzl.netty.chapter2_aionio.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
