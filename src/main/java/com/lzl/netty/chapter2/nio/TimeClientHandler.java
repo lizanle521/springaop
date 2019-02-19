@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.spi.AbstractSelectionKey;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -93,7 +92,7 @@ public class TimeClientHandler implements Runnable
             // 判断是否连接成功
             SocketChannel sc = (SocketChannel)key.channel();
             if(key.isConnectable()){
-                if(sc.finishConnect()){
+                if(sc.finishConnect()){// 服务端已经返回ack状态
                     sc.register(selector,SelectionKey.OP_READ);
                     doWrite(sc);
                 }else{
