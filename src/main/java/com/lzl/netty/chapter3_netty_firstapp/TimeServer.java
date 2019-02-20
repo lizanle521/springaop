@@ -15,7 +15,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class TimeServer {
 
     public static void main(String[] args) throws Exception {
-        int port = 8081;
+        int port = 8082;
         if(args != null && args.length > 0){
             try {
                 Integer.valueOf(args[0]);
