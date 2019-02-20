@@ -17,11 +17,17 @@ public class TimeClientHandler extends ChannelHandlerAdapter {
     private final ByteBuf msg;
     public TimeClientHandler() {
         byte[] req = "QUERY TIME ORDER".getBytes();
-        // 书上写的是Unpooled.buffer(req.length),这里我暂时不改，看看是否有bug
+        // 书上写的是msg = Unpooled.buffer(req.length),msg.writeBytes(req);这里我暂时不改，看看是否有bug
         msg = Unpooled.copiedBuffer(req);
 
     }
 
+    /**
+     * 服务端返回消息的时候，会调用这个方法
+     * @param ctx
+     * @param msg
+     * @throws Exception
+     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
