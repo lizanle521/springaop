@@ -1,5 +1,7 @@
 package com.lzl.netty.chapter6_encode_decode.javaserilization;
 
+import org.msgpack.annotation.Message;
+
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
@@ -7,6 +9,11 @@ import java.nio.ByteBuffer;
  * @author lizanle
  * @Date 2019/2/22 10:25
  */
+
+/**
+ * 第7章代码里 message注解不能少
+ */
+@Message
 public class UserInfo implements Serializable {
 
     private static final long serialVersionUID = 2669960651014197594L;
@@ -15,6 +22,10 @@ public class UserInfo implements Serializable {
     private String userName;
 
     private String address;
+
+    public UserInfo() {
+
+    }
 
     public String getUserId() {
         return userId;
@@ -82,5 +93,14 @@ public class UserInfo implements Serializable {
         buffer.get(bytes);
 
         return bytes;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }

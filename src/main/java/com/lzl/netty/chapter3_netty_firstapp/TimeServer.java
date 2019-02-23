@@ -26,15 +26,16 @@ public class TimeServer {
         new TimeServer().bind(port);
     }
     public void bind(int port) throws Exception {
-        // 配置服务端线程组
+        // 配置服务端线程组，一个用来接收客户端的连接，一个用于socketchannel的网络读写
         NioEventLoopGroup boosGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
+            // 启动nio服务器的辅助类，用于降低服务端的开发复杂度
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boosGroup,workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG,1024)
+                    .option(ChannelOption.SO_BACKLOG,1024) // tcp握手成功队列
                     .childHandler(new ChildChannelHandler());
 
             // 绑定端口，同步等待成功
