@@ -1,7 +1,11 @@
 package com.lzl.netty.chapter7_msgpack.block;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * @author lizanle
@@ -24,7 +28,17 @@ public class EchoClientHandler extends ChannelHandlerAdapter {
         System.out.println("client channel active");
         UserInfo[] userInfos = userInfos();
         for (UserInfo userInfo : userInfos) {
-            ctx.write(userInfo);
+            ChannelFuture channelFuture = ctx.write(userInfo);
+            channelFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if(future.cause()!= null){
+                        future.cause().printStackTrace();
+                    }
+                    System.out.println("operationComplete");
+                }
+
+            });
         }
         ctx.flush();
     }

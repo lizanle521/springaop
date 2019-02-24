@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * @author lizanle
  * @Date 2019/2/24 10:25
  */
-
+//@Message
 public class UserInfo implements Serializable {
 
     private String userId;

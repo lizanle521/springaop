@@ -9,6 +9,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * @author lizanle
@@ -38,6 +40,7 @@ public class EchoClient {
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY,true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,3000)
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
                     .handler(new ChannelInitializer(){
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
