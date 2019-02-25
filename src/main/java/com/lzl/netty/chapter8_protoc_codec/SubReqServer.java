@@ -50,7 +50,7 @@ public class SubReqServer {
             ChannelFuture future = bootstrap.bind(port).sync();
 
             future.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } finally {
             bossGroup.shutdownGracefully();
             workergroup.shutdownGracefully();
         }
