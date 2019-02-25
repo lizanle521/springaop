@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter5_delimiter_fixlength_decoder;
+package com.lzl.netty.chapter5_delimiter_fixlength_decoder.delimeter;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -38,7 +38,7 @@ public class EchoClient {
             ChannelFuture future = bootstrap.connect(host, port).sync();
 
             future.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } finally {
             group.shutdownGracefully();
         }
     }

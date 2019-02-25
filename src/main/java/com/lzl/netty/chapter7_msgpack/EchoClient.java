@@ -58,7 +58,7 @@ public class EchoClient {
             ChannelFuture future = bootstrap.connect(host, port).sync();
 
             future.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } finally {
             group.shutdownGracefully();
         }
     }
