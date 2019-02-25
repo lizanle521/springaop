@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter5_delimiter_fixlength_decoder;
+package com.lzl.netty.chapter5_delimiter_fixlength_decoder.delimeter;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;

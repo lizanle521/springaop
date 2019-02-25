@@ -1,51 +1,58 @@
-package com.lzl.netty.chapter5_delimiter_fixlength_decoder;
+package com.lzl.netty.chapter8_protoc_codec;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 /**
  * @author lizanle
- * @Date 2019/2/21 11:38
+ * @Date 2019/2/25 11:34
  */
-public class EchoServer {
+public class SubReqServer {
 
     public void bind(int port) throws Exception {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+        NioEventLoopGroup workergroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup,workerGroup)
+            bootstrap.group(bossGroup,workergroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG,100)
+                    .option(ChannelOption.SO_BACKLOG,1024)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
-                            ByteBuf delimeter = Unpooled.copiedBuffer("$_".getBytes());
-                            // 超过2014长度还没有找到分隔符就抛出 toolongframeexception
-                            ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024,delimeter));
-                            ch.pipeline().addLast(new StringDecoder());
-                            ch.pipeline().addLast(new EchoServerHandler());
+                            // 用于半包处理，和 LengthFieldBasedFrameDecoder 有点像
+                            ch.pipeline().addLast(new ProtobufVarint32FrameDecoder());
+                            // 对象解码
+                            ch.pipeline().addLast(new ProtobufDecoder(
+                                    SubscribeReqProto.SubscribeReq.getDefaultInstance()
+                            ));
+                            // 在数据包前加长度
+                            ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
+                            // 对象编码
+                            ch.pipeline().addLast(new ProtobufEncoder());
+                            ch.pipeline().addLast(new SubReqServerHandler());
                         }
                     });
+
             ChannelFuture future = bootstrap.bind(port).sync();
 
             future.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } finally {
             bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+            workergroup.shutdownGracefully();
         }
     }
 
@@ -58,6 +65,6 @@ public class EchoServer {
 
             }
         }
-        new EchoServer().bind(port);
+        new SubReqServer().bind(port);
     }
 }

@@ -30,4 +30,7 @@ package com.lzl.netty.chapter4_tcpmsgpackage.packetsplicing;
  ,the counter is0
 
  显然，服务端和客户端都发生了粘包
+
+ netty 提供的LineBasedFrameDecoder 来处理这个问题
+
  */

@@ -1,58 +1,55 @@
-package com.lzl.netty.chapter5_delimiter_fixlength_decoder;
+package com.lzl.netty.chapter8_protoc_codec;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * @author lizanle
- * @Date 2019/2/21 14:22
+ * @Date 2019/2/25 13:37
  */
-public class EchoClient {
+public class SubReqClient {
 
     public void connect(String host,int port) throws Exception {
         NioEventLoopGroup group = new NioEventLoopGroup();
-
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY,true)
+                    .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
-                            ByteBuf delimeter = Unpooled.copiedBuffer("$_".getBytes());
-                            ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimeter));
-                            ch.pipeline().addLast(new StringDecoder());
-                            ch.pipeline().addLast(new EchoClientHandler());
+                            ch.pipeline().addLast(new ProtobufVarint32FrameDecoder());
+                            ch.pipeline().addLast(new ProtobufDecoder(
+                                    SubscribeRespProto.SubscribeResp.getDefaultInstance()
+                            ));
 
+                            ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
+                            ch.pipeline().addLast(new ProtobufEncoder());
+
+                            ch.pipeline().addLast(new SubReqClientHandler());
                         }
                     });
             ChannelFuture future = bootstrap.connect(host, port).sync();
 
             future.channel().closeFuture().sync();
-        } catch (Exception e) {
+        }finally {
             group.shutdownGracefully();
         }
     }
 
     public static void main(String[] args) throws Exception {
-        int port =  8081;
-        if(args != null && args.length > 0){
-            try {
-                port = Integer.valueOf(args[0]);
-            } catch (NumberFormatException e) {
-
-            }
-        }
-
-        new EchoClient().connect("127.0.0.1",port);
+        new SubReqClient().connect("127.0.0.1",8081);
     }
 }
