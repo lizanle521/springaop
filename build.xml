@@ -1,0 +1,17 @@
+<!-- set classpath for compiling and running application with JiBX -->
+<project>
+    <path id="classpath">
+        <fileset dir="${basedir}/src/lib" includes="*.jar"/>
+    </path>
+    <target name="bindgen">
+    <echo message="Running BindGen tool"/>
+    <java classpathref="classpath" fork="true" failonerror="true"
+          classname="org.jibx.binding.generator.BindGen">
+        <arg value="-s"/>
+        <arg value="${basedir}/target/classes/"/>
+        <arg value="com.lzl.netty.chapter10fileserver.httpxml.Order"/>
+    </java>
+
+    </target>
+</project>
+

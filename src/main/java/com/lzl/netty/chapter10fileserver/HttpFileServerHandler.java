@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter10_fileserver;
+package com.lzl.netty.chapter10fileserver;
 
 
 import io.netty.buffer.ByteBuf;
@@ -14,7 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.LOCATION;

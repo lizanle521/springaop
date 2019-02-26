@@ -1,4 +1,4 @@
-package com.lzl.netty.chapter10_fileserver;
+package com.lzl.netty.chapter10fileserver;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
