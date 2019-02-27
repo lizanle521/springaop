@@ -17,6 +17,8 @@ import io.netty.handler.codec.http.HttpResponseDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author lizanle
  * @Date 2019/2/27 14:56
@@ -30,7 +32,6 @@ public class HttpXmlClient {
             bootstrap.group(workerGroup)
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY,true)
-                    .option(ChannelOption.SO_REUSEADDR,true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
@@ -53,7 +54,7 @@ public class HttpXmlClient {
 
                         }
                     });
-            ChannelFuture future = bootstrap.connect(host, port).sync();
+            ChannelFuture future = bootstrap.connect(new InetSocketAddress(port)).sync();
 
             future.channel().closeFuture().sync();
         } finally {

@@ -16,7 +16,7 @@ public class HttpXmlResponseEncoder extends AbstractHttpXmlEncoder<HttpXmlRespon
     protected void encode(ChannelHandlerContext ctx, HttpXmlResponse response, List<Object> out) throws Exception {
         ByteBuf byteBuf = encode0(ctx, response.getResult());
         FullHttpResponse httpResponse = response.getResponse();
-        if(httpResponse != null){
+        if(httpResponse == null){
             httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
                     HttpResponseStatus.OK,byteBuf);
         }else{
