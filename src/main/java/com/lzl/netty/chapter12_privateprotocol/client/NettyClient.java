@@ -14,6 +14,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class NettyClient {
                         }
                     });
 
-            ChannelFuture future = bootstrap.connect(host, port).sync();
+            ChannelFuture future = bootstrap.connect(new InetSocketAddress(host,port)).sync();
 
             future.channel().closeFuture().sync();
         } finally {
@@ -59,7 +60,7 @@ public class NettyClient {
                     try {
                         TimeUnit.SECONDS.sleep(1);
                         try {
-                            connect("127.0.0.1",8081);//发起重连
+                            connect("127.0.0.1",port);//发起重连
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
