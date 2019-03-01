@@ -42,7 +42,7 @@ public class WebSocketServer {
 
                             ch.pipeline().addLast("http-chunked",
                                     new ChunkedWriteHandler());
-                            ch.pipeline().addLast("handler",
+                            ch.pipeline().addLast("client",
                                     new WebSocketServerHandler());
                         }
                     });
