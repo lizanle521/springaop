@@ -1,0 +1,18 @@
+## Netty 服务端创建时序图
+![Alt nettyserverstartup](../img/netty_server_start_sequence_diagram.png)
+
+下面我们对netty服务端创建的关键步骤和原理进行讲解
+
+- 创建ServerBootStrap实例，ServetBootStrap是Netty服务端的启动辅助类，它提供了一系列的方法用于设置服务端启动的相关参数。底层通过门面模式对各种能力
+进行抽象和封装。尽量不需要用户跟过多的底层api打交道，降低用户的开发难度。
+serverbootstrap是采用builder模式的类，没有构造函数是因为参数太多了，并且参数未来可能变化。
+
+- 设置并绑定reactor线程池。Netty的reactor线程池是EventLoopGroup.实际上是EventLoop的数组。EventLoop的指责是处理所有注册到本线程多路复用器selector
+上的channel. selector的轮询操作由绑定的EventLoop线程run方法驱动。在一个循环内部执行。
+值得说明的是，EventLoop的职责不仅仅是处理网络i/o事件，用户自定义的Task 和定时人物 也可以由EventLoop负责处理。这样线程模型就实现了统一。
+从调度层面看，也不存在从EventLoop线程中再启动其他类型的线程用于异步执行另外的任务。避免了多线程并发和锁的竞争，提升了i/o线程的处理和调度性能。
+
+- 设置并绑定服务端channel. 作为Nio服务器，需要创建ServerSocketChannel,Netty对原声的NIO类库进行的封装，对应的实现是NioServerSocketChannel.
+对于用户而言，不需要关心服务器端Channel的底层实现细节和工作原理，只需要制定具体使用那种服务端channel即可。因此，netty的ServerBootStrap方法提供
+了channel方法用于制定服务器的channel类型，Netty通过工厂类，利用反射创建NioServerSocketChannel对象。由于服务端监听端口往往只需要在系统启动的时候
+才会调用，因此反射对性能的影响不大。

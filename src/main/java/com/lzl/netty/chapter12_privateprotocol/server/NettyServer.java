@@ -3,7 +3,6 @@ package com.lzl.netty.chapter12_privateprotocol.server;
 import com.lzl.netty.chapter12_privateprotocol.codec.NettyMessageDecoder;
 import com.lzl.netty.chapter12_privateprotocol.codec.NettyMessageEncoder;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,8 +11,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-
-import java.net.InetSocketAddress;
 
 /**
  * @author lizanle
@@ -25,9 +22,8 @@ public class NettyServer {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
-
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup,workerGroup)
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(bossGroup,workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG,1024)
                     .option(ChannelOption.SO_REUSEADDR,true)
@@ -45,7 +41,7 @@ public class NettyServer {
                         }
                     });
 
-            bootstrap.bind(port).sync();
+        bootstrap.bind(port).sync();
 
 
     }
