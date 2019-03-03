@@ -62,6 +62,7 @@ public class NettyMessageEncoder extends MessageToMessageEncoder<NettyMessage> {
         }
 
         // 之前写了crcCode 4bytes，除去crcCode和length 8bytes即为更新之后的字节
+        // 这个减8不令人信服，如果头部里边还包括其他东西呢，这是通用encoder呀
         buffer.setInt(4,buffer.readableBytes()-8);
 
         out.add(buffer);

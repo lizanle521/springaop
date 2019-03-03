@@ -1,5 +1,6 @@
 package com.lzl.netty.chapter12_privateprotocol.server;
 
+import com.lzl.netty.chapter12_privateprotocol.codec.ExceptionHandler;
 import com.lzl.netty.chapter12_privateprotocol.codec.NettyMessageDecoder;
 import com.lzl.netty.chapter12_privateprotocol.codec.NettyMessageEncoder;
 import io.netty.bootstrap.ServerBootstrap;
@@ -27,7 +28,9 @@ public class NettyServer {
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG,1024)
                     .option(ChannelOption.SO_REUSEADDR,true)
+                    // handler设置的是多例的handler,每个新接入的客户端都会创建一个新的Handler
                     .handler(new LoggingHandler(LogLevel.INFO))
+                    // 所有连接该监听端口的客户端都会执行每个handler
                     .childHandler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
@@ -38,6 +41,7 @@ public class NettyServer {
 
                             ch.pipeline().addLast(new LoginAuthRespHandler());
                             ch.pipeline().addLast(new HeartBeatRespHandler());
+                            ch.pipeline().addLast(new ExceptionHandler());
                         }
                     });
 

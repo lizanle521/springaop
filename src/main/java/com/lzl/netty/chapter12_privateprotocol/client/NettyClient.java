@@ -1,5 +1,6 @@
 package com.lzl.netty.chapter12_privateprotocol.client;
 
+import com.lzl.netty.chapter12_privateprotocol.codec.ExceptionHandler;
 import com.lzl.netty.chapter12_privateprotocol.codec.NettyMessageDecoder;
 import com.lzl.netty.chapter12_privateprotocol.codec.NettyMessageEncoder;
 import com.lzl.netty.chapter12_privateprotocol.server.LoginAuthRespHandler;
@@ -47,6 +48,7 @@ public class NettyClient {
 
                             ch.pipeline().addLast(new LoginAuthReqHandler());
                             ch.pipeline().addLast(new HeartBeatReqHandler());
+                            ch.pipeline().addLast(new ExceptionHandler());
                         }
                     });
 
