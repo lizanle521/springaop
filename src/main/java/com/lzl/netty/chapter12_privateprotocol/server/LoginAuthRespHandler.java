@@ -28,6 +28,7 @@ public class LoginAuthRespHandler extends ChannelHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("LoginAuthRespHandler channelRead start");
         NettyMessage message = (NettyMessage) msg;
 
         // 如果是握手请求消息，处理，其他消息透传
@@ -36,6 +37,7 @@ public class LoginAuthRespHandler extends ChannelHandlerAdapter {
             NettyMessage resp = null;
             // 重复登陆，拒绝
             if(nodeCheck.containsKey(host)){
+                System.out.println("repeat login ,illegal!");
                 resp = buildResponse((byte) -1);
                 ctx.writeAndFlush(resp);
             }else{
@@ -65,6 +67,7 @@ public class LoginAuthRespHandler extends ChannelHandlerAdapter {
         nodeCheck.remove(ctx.channel().remoteAddress().toString());
         cause.printStackTrace();
         ctx.close();
+        ctx.fireExceptionCaught(cause);
     }
 
     private NettyMessage buildResponse(byte result) {

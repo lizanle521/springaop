@@ -19,13 +19,14 @@ public class LoginAuthReqHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("LoginAuthReqHandler channelread start");
         NettyMessage nettyMessage = (NettyMessage) msg;
 
         //如果是握手应答消息，需要判断是否认证成功
         if(nettyMessage.getHeader() != null
                 && nettyMessage.getHeader().getType() == MessageType.LOGIN_RESP.value()){
             byte loginResult = (byte) nettyMessage.getBody();
-            if(loginResult != (byte)0){
+            if(loginResult != (byte)1){
                 // 握手失败，连接关闭
                 ctx.close();
             }else{
@@ -39,8 +40,7 @@ public class LoginAuthReqHandler extends ChannelHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        ctx.close();
+        ctx.fireExceptionCaught(cause);
     }
 
     private NettyMessage buildLoginReq() {

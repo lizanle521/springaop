@@ -50,7 +50,7 @@ public class NettyClient {
                         }
                     });
 
-            ChannelFuture future = bootstrap.connect(new InetSocketAddress(host,port)).sync();
+            ChannelFuture future = bootstrap.connect(new InetSocketAddress(host,port),new InetSocketAddress(host,10880)).sync();
 
             future.channel().closeFuture().sync();
         } finally {
@@ -60,6 +60,7 @@ public class NettyClient {
                     try {
                         TimeUnit.SECONDS.sleep(1);
                         try {
+                            System.out.println("客户端进行服务重连");
                             connect("127.0.0.1",port);//发起重连
                         } catch (Exception e) {
                             e.printStackTrace();

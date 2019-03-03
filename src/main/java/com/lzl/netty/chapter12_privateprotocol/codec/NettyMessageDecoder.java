@@ -24,6 +24,8 @@ public class NettyMessageDecoder extends LengthFieldBasedFrameDecoder {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+        System.out.println("NettyMessageDecoder decode start");
+        // 通过父类的decode方法进行拆包，后续都要针对这个拆好的包进行操作
         ByteBuf frame = (ByteBuf) super.decode(ctx, in);
         if(frame == null){
             return null;
@@ -31,25 +33,24 @@ public class NettyMessageDecoder extends LengthFieldBasedFrameDecoder {
 
         NettyMessage nettyMessage = new NettyMessage();
         Header header = new Header();
-        header.setCrcCode(in.readInt());
-        header.setLength(in.readInt());
-        header.setSessionID(in.readLong());
-        header.setType(in.readByte());
-        header.setPriority(in.readByte());
+        header.setCrcCode(frame.readInt());
+        header.setLength(frame.readInt());
+        header.setSessionID(frame.readLong());
+        header.setType(frame.readByte());         header.setPriority(frame.readByte());
 
-        int size = in.readInt();
+        int size = frame.readInt();
         if(size > 0){
             HashMap<String, Object> map = new HashMap<>(size);
             int keySize = 0;
             byte[] keyArray = null;
             String key = null;
             for (int i = 0; i < size; i++) {
-                keySize = in.readInt();
+                keySize = frame.readInt();
                 keyArray = new byte[keySize];
-                in.readBytes(keyArray);
+                frame.readBytes(keyArray);
 
                 key = new String(keyArray,"utf-8");
-                map.put(key,marshallingDecoder.decode(in));
+                map.put(key,marshallingDecoder.decode(frame));
             }
 
             keyArray = null;
@@ -57,8 +58,8 @@ public class NettyMessageDecoder extends LengthFieldBasedFrameDecoder {
             header.setAttachment(map);
         }
 
-        if(in.readableBytes() > 4){
-            nettyMessage.setBody(marshallingDecoder.decode(in));
+        if(frame.readableBytes() > 4){
+            nettyMessage.setBody(marshallingDecoder.decode(frame));
         }
         nettyMessage.setHeader(header);
         return nettyMessage;

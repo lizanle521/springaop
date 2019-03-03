@@ -4,6 +4,7 @@ import com.lzl.netty.chapter12_privateprotocol.struct.NettyMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
 import java.util.List;
@@ -22,12 +23,13 @@ public class NettyMessageEncoder extends MessageToMessageEncoder<NettyMessage> {
         this.marshallingEncoder = new MarshallingEncoder();
     }
 
+
     @Override
     protected void encode(ChannelHandlerContext ctx, NettyMessage msg, List<Object> out) throws Exception {
+        System.out.println("NettyMessageEncoder encode start");
         if(msg == null || msg.getHeader() == null){
             throw new Exception("The encode message or message header is null.pls check it");
         }
-
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeInt(msg.getHeader().getCrcCode());
         buffer.writeInt(msg.getHeader().getLength());
@@ -57,7 +59,11 @@ public class NettyMessageEncoder extends MessageToMessageEncoder<NettyMessage> {
             marshallingEncoder.encode(msg.getBody(),buffer);
         }else{
             buffer.writeInt(0);
-            buffer.setInt(4,buffer.readableBytes());
         }
+
+        // 之前写了crcCode 4bytes，除去crcCode和length 8bytes即为更新之后的字节
+        buffer.setInt(4,buffer.readableBytes()-8);
+
+        out.add(buffer);
     }
 }

@@ -18,6 +18,7 @@ public class HeartBeatRespHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("HeartBeanRespHandler channelRead start");
         NettyMessage message = (NettyMessage) msg;
         // 如果是心跳请求消息，则给个回应
         if(message != null &&
@@ -38,9 +39,4 @@ public class HeartBeatRespHandler extends ChannelHandlerAdapter {
         return message;
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        ctx.close();
-    }
 }
