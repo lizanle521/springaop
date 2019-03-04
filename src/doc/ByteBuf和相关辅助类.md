@@ -48,7 +48,34 @@ String s = new String(arr);
  
  初始化的ByteBuf如下图：
 ![Alt bytebufinit](../img/bytebuf_init.png)
-：
+写入N哥字节以后的bytebuf如图所示
+![Alt bytebufwriteN](../img/bytebuf_writeN.png)
+读取M（M<N)个字节以后的bytebuf如图所示
+![Alt bytebufreadM](../img/bytebuf_readM.png)
+调用discardReadBytes以后的byteBuf如图所示：
+![Alt bytebufdiscard](../img/bytebuf_afterdiscard.png)
+调用clear之后的bytebuf如图所示
+![Alt bytebufinit](../img/bytebuf_init.png)
+
+#### byteBuffer动态扩张
+我们来分析一下byteBuffer是如何实现动态扩张的，通常情况下，我们对ByteBuffer进行put操作的时候，如果缓冲区可写空间不够，就会发生BufferOverFlowException。
+为了避免发生这个问题，通常在put操作的时候就会对剩余的可用空间进行校验，如果剩余空间不足，需要重新创建一个新的bytebuffer，并且将之前的bytebuffer复制到新的
+bytebuffer，最后释放老的bytebuffer。代码示例如下：
+```text
+if(this.buffer.remaining() < needSize){
+    int toBeExtSize = needSize > 128 ? needSize : 128;
+    ByteBuffer tmpBuffer = ByteBuffer.allocate(this.buffer.capacity()+toBeExtSize);
+    this.buffer().flip();
+    tmpBuffer.put(this.buffer);
+    this.buffer = tmpBuffer;
+}
+```
+从代码示例中看出，为了防止ByteBuffer溢出，每进行一次put操作，都需要对可用空间进行校验，导致了代码冗余。稍有不慎，可能引入其他问题。
+netty为了解决bytebuffer动态扩张的问题，将write操作进行了封装，由bytebuffer的write操作负责进行可用空间的校验，如果缓冲区不足，bytebuf会动态扩张，
+对于使用者而言，不需要关心底层的校验和扩展细节，只要不超过设置的最大缓冲区容量即可。
+
+由于NIO的channel读写的参数都是ByteBuffer，因此，Netty的ByteBuf接口必须提供API,以方便的将ByteBuf转换成ByteBuffer，或者将ByteBuffer包装成ByteBuf。
+考虑到性能，应该尽量避免缓冲区的复制，内部实现的时候可以考虑聚合一个ByteBuffer的私有指针来代表ByteBuffer。
 
  
  
