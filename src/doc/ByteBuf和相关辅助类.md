@@ -77,5 +77,69 @@ netty为了解决bytebuffer动态扩张的问题，将write操作进行了封装
 由于NIO的channel读写的参数都是ByteBuffer，因此，Netty的ByteBuf接口必须提供API,以方便的将ByteBuf转换成ByteBuffer，或者将ByteBuffer包装成ByteBuf。
 考虑到性能，应该尽量避免缓冲区的复制，内部实现的时候可以考虑聚合一个ByteBuffer的私有指针来代表ByteBuffer。
 
+#### readerIndex 和 writeIndex
+Netty的byteBuf提供了两个变量用于支持顺序读取 和 写入操作：readerIndex用于表示读取索引，writerIndex用于标示读取索引。调用byteBuf的read操作的时候，
+从readerIndex处开始读取， 
+ * readerIndex到writerIndex之间的为可读缓冲区。
+ * 从writerIndex到capacity之间为可写缓冲区。
+ * 从0到readerIndex为discardable缓冲区，调用discardReadBytes操作来释放这部分空间，可以解决内存，防止byteBuf动态扩张
+ 
+#### discardableBytes
+相比于其他java对象，缓冲区的分配和释放是一个耗时的操作，因此，我们需要尽量重用他们，由于缓冲区的动态扩展需要进行字节数的复制，是一个耗时的操作，因此，为了
+最大限度的提升程序性能，往往需要尽最大的努力提升缓冲区的重用率。
+需要指出的是，调用discardableBytes会发生字节数组的内存复制，频繁调用可能会导致性能下降，因此调用之前你需要确认需要这么做，例如牺牲性能来换更多的可用内存。
+
+#### readableBytes 和 writetablebytes 
+可读空间是数据实际存储的区域，以read或者skip开头的任何操作都将会从readerindex开始读取或者跳过制定的字节数，并且readerindex相应的增加
+可读空间是尚未被使用的可以填充的空闲空间，任何以write开头的操作都会从writeindex开始向空闲空间写入字节，操作完成以后writeindex相应的增加
+
+#### clear操作
+bytebuffer 和  bytebuf都一样，都是将 position，limit ，readerindex,writeindex置0，其他位置填充0x00
+
+#### mark 和 reset
+mark 保存当前索引位置，reset将之前保存的索引位置恢复出来
+
+#### 查找操作
+- indexOf(int fromIndex,int toIndex,byte value)：从当前bytebuf中定位处首次出现在value的位置，起始索引为fromindex,终点是toIndex
+- bytesBefore(byte value):从当前bytebuf中定位出首次出现value的位置，起始索引为readerIndex，终点索引是writerIndex
+- bytesBefore(int length,byte value):从当前ByteBuf中定位出首次出现的value的位置，起始位置为readerIndex，终点是readerIndex+length,
+如果length大于可读字节数则会抛出异常
+- bytesBefore(int index,int length,byte value):从当前bytebuf中定位出首先出现value的位置，起始位置为idnex,终点是index+length
+- forEachByte(ByteBufProcessor processor):遍历当前ByteBuf的可读字节数，于ByteBufProcessor设置的查找条件对比，满足条件返回索引，否则返回-1
+- forEachByte(int index,int length,ByteBufProcessor processor):对当前bytebuf的可读字节数，起始索引为index，终点为index+length进行遍历
+- forEachByteDesc(ByteBuf processor):逆序，起始索引从writerIndex开始，查到readerIndex
+- forEachByteDesc(int index,int length,ByteBufProcessor processor):逆序，起始索引从index+length-开始，直到index
+
+#### 生成ByteBuf
+类似于数据库的视图（共享数据源），byteBuf提供了多个接口用于创建某个ByteBuf的视图或者复制ByteBuf，具体方法如下：
+- duplicate: 返回当前ByteBuf的复制对象，复制后返回的ByteBuf与操作的ByteBuf共享缓冲内容，但是维护自己独立的读写索引，当修改复制后的ByteBuf内容后，
+之前的ByteBuf内容也随之改变，双方持有的是同一个内容的指针引用。
+- copy:复制一个新的ByteBuf对象，他的内容和索引都是独立的，复制操作本身并不修改源ByteBuf的读写索引
+- copy(int index,int length):从制定的索引开始复制，复制的字节长度为length;复制后的bytebuf完全独立。
+- slice:返回当前的byteBuf的可读子缓冲区，起始位置从readerIndex到writeIndex,返回后的byteBuf与原byteBuf共享内容，但是读写索引独立维护，该操作并不修改原
+bytebuf的readerindex和writeindex
+- slice(int index,int length):返回当钱bytebuf的可读子缓冲区，起始位置为index到index+length，内容共享但索引独立
+
+#### 转换成标注的ByteBuffer
+ByteBuf-》ByteBuffer方法：
+- ByteBuffer nioBuffer():返回可读的缓冲区，共享同一个缓冲区内容。无法感知原来的ByteBuf的扩容操作
+- ByteBuffer nioBuffer(int index,int length):从index开始长度为length的ByteBuffer。共享缓冲区，索引独立，无法感知原ByteBuf扩容操作
+
+#### 随机读写
+无论是随机读get还是随机写set,byteBuf都会对索引和长度等进行合法性校验，set不能支持动态扩展缓冲区，使用者必须保证当前可写字节数大于写入字节数长度
+
+### ByteBuf源码分析
+我们先来看ByteBuf类的继承关系
+![Alt bytebufclassdiagram](../img/bytebuf_class_diagram.png)
+
+从内存分配的角度看，byteBuf可以分为两类：
+- 对内存（HeapByteBuf)字节缓冲区：特点是内存的分配和回收速度快，可以被JVM自动回收：缺点是如果进行Socket的I/O读写，需要额外做一次内存复制，
+将内存对应的缓冲区到内核channel中，性能会有一定的损耗
+- 直接内存（DirectByteBuf）字节缓冲区：直接内存，分配和回收速度会慢一些，将它写入socket channel中时，由于少了一次内存复制，速度比对内存快。
+
+正因为有利有弊，所以Netty提供了多种bytebuf供开发者使用，经验表明，ByteBuf的最佳实践是：
+- i/o通信线程的读写缓冲区使用DirectByteBuf
+- 后端业务消息的编解码模块使用HeapByteBuf. 
+
  
  
