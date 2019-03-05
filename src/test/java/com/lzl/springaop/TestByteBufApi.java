@@ -106,6 +106,38 @@ public class TestByteBufApi {
         assert byteBuf.writerIndex() == 12;
         long l = byteBuf.readLong();
         assert l == 8L;
+        assert byteBuf.readerIndex() == 12;
+        assert byteBuf.readableBytes() == 0;
+        assert  byteBuf.writableBytes() == 256-12;
+
+
+        //ByteBuf.writeBytes(ByteBuf src,int srcIndex,int length),将源ByteBuf中的可读字节写入到当前bytebuf中，写入的字节长度为
+        // length,起始索引为srcIndex
+        bf.writeInt(2);
+        bf.writeInt(2);
+        assert bf.writerIndex() == 20;
+
+        byteBuf.writeBytes(bf,12,8);
+
+        assert byteBuf.writerIndex() == 20;
+        int a = byteBuf.readInt();
+        assert  byteBuf.readerIndex() == 16;
+        int b = byteBuf.readInt();
+        assert byteBuf.readerIndex() == 20;
+        assert a == 2;
+        assert b == 2;
+
+        // ByteBuf.writeBytes(byte[] src) ，将源字节数组src的所有字节写入到当前bytebuf中，
+        String s = "hello lizanle";
+        byte[] bytes = s.getBytes();
+        int length = bytes.length;
+        byteBuf.writeBytes(bytes);
+
+        assert byteBuf.writerIndex() == 20 + length;
+        byte[] sbt = new byte[length];
+        byteBuf.readBytes(sbt,0,length);
+        String s1 = new String(sbt);
+        assert s1.equals(s);
 
     }
 }
