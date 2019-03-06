@@ -132,7 +132,7 @@ ByteBuf-》ByteBuffer方法：
 我们先来看ByteBuf类的继承关系
 ![Alt bytebufclassdiagram](../img/bytebuf_class_diagram.png)
 
-从内存分配的角度看，byteBuf可以分为两类：
+1. 从内存分配的角度看，byteBuf可以分为两类：
 - 对内存（HeapByteBuf)字节缓冲区：特点是内存的分配和回收速度快，可以被JVM自动回收：缺点是如果进行Socket的I/O读写，需要额外做一次内存复制，
 将内存对应的缓冲区到内核channel中，性能会有一定的损耗
 - 直接内存（DirectByteBuf）字节缓冲区：直接内存，分配和回收速度会慢一些，将它写入socket channel中时，由于少了一次内存复制，速度比对内存快。
@@ -140,6 +140,267 @@ ByteBuf-》ByteBuffer方法：
 正因为有利有弊，所以Netty提供了多种bytebuf供开发者使用，经验表明，ByteBuf的最佳实践是：
 - i/o通信线程的读写缓冲区使用DirectByteBuf
 - 后端业务消息的编解码模块使用HeapByteBuf. 
+
+2. 从内存回收的角度来看，ByteBuf也分两类，基于对象池的ByteBuf和普通ByteBuf,两者的主要区别是基于对象池的的ByteBuf可以重用ByteBuf对象。他维护了一个对象池，
+可以循环利用创建的ByteBuf.提升内存的使用率。降低由于高负载导致的频繁GC,测试表明使用内存池后的Netty在高负载，高并发冲击下内存和GC更加平稳。
+
+#### AbstractByteBuf源码分析
+AbstractByteBuf继承自ByteBuf,ByteBuf的公共属性和功能会在AbstractByteBuf中实现
+##### 主要成员变量
+首先，像读索引，写索引，mark,最大容量等公共属性的定义都在AbstractByteBuf中，如图：
+![Alt abstractbytebufclassvar](../img/abstractbytebuf_class_var.png)
+我们重点关注一下leakDector,它被定义为static,意味着所有ByteBuf实例共享同一个ResourceLeakDector对象，ResourceLeakDector用于检测对象是否泄漏
+
+##### 读操作簇
+无论子类如何实现ByteBuf,UnpooledHeapByteBuf用字节数组表示字节缓冲区，UnpooledDirectByteBuf直接使用ByteBuffer,功能相同，操作结果等价。
+因此，读操作以及一些其他公共操作都由父类实现，差异化功能由子类实现，这也是抽象和继承的价值所在。
+譬如 ByteBuf.readBytes(byte[] dst,int dstIndex,int length),源码如下：
+```text
+    public ByteBuf readBytes(byte[] dst, int dstIndex, int length) {
+        checkReadableBytes(length);
+        getBytes(readerIndex, dst, dstIndex, length);
+        readerIndex += length;
+        return this;
+    }
+```
+首先，我们对缓冲区的可用空间进行校验，校验空间代码如下：
+```text
+   protected final void checkReadableBytes(int minimumReadableBytes) {
+        ensureAccessible();
+        if (minimumReadableBytes < 0) {
+            throw new IllegalArgumentException("minimumReadableBytes: " + minimumReadableBytes + " (expected: >= 0)");
+        }
+        if (readerIndex > writerIndex - minimumReadableBytes) {
+            throw new IndexOutOfBoundsException(String.format(
+                    "readerIndex(%d) + length(%d) exceeds writerIndex(%d): %s",
+                    readerIndex, minimumReadableBytes, writerIndex, this));
+        }
+    }
+```
+如果读取的长度小于0，则抛出IllegalArgumentException异常。如果可读取的字节数小于length,则抛出IndexOutOfBoundsException异常
+然后，从readerIndex开始读取，复制length个字节到目标数组dst中，复制后的位置从dstIndex开始。这由于和子类实现相关，所以该方法是抽象方法。
+```text
+public abstract ByteBuf getBytes(int index, byte[] dst, int dstIndex, int length);
+```
+最后读取成功的话，就对readerIndex进行递增
+
+##### 写操作簇
+与读操作类似，写操作簇的公共操作在父类中实现，我们选择与读取配套的writeBytes(byte[] src,int srcIndex,int length),他的功能是从数组中的srcIndex开始
+读取length个字节写入当前byteBuf.`读操作里边的参数都是目标对象，写操作的参数都是源对象`
+```text
+    public ByteBuf writeBytes(byte[] src, int srcIndex, int length) {
+        ensureWritable(length);
+        setBytes(writerIndex, src, srcIndex, length);
+        writerIndex += length;
+        return this;
+    }
+```
+首先，对可写入的长度进行校验
+```text
+ public ByteBuf ensureWritable(int minWritableBytes) {
+        //第一步校验参数length是否合法
+        if (minWritableBytes < 0) {
+            throw new IllegalArgumentException(String.format(
+                    "minWritableBytes: %d (expected: >= 0)", minWritableBytes));
+        }
+        // 第二步 length如果小于可写字节数，那么就可以写
+        if (minWritableBytes <= writableBytes()) {
+            return this;
+        }
+        //第三步，如果length大于最大可写字节数那么抛IndexOutOfBoundsException异常
+        if (minWritableBytes > maxCapacity - writerIndex) {
+            throw new IndexOutOfBoundsException(String.format(
+                    "writerIndex(%d) + minWritableBytes(%d) exceeds maxCapacity(%d): %s",
+                    writerIndex, minWritableBytes, maxCapacity, this));
+        }
+
+        // 第四步 计算需要扩容后的容量
+        int newCapacity = calculateNewCapacity(writerIndex + minWritableBytes);
+
+        //  第五步，调整至扩容后的容量
+        capacity(newCapacity);
+        return this;
+    }
+```
+
+我们看看第四步的源码：
+```text
+ private int calculateNewCapacity(int minNewCapacity) {
+        // 记录当前最大容量
+        final int maxCapacity = this.maxCapacity;
+        // 扩充容量的一个阈值，低于这个阈值，可以采用倍增的方式，高于这个阈值，每次只增加这个阈值容量，等于阈值，直接用这个阈值
+        final int threshold = 1048576 * 4; // 4 MiB page 这个阈值是经验值，不同的场景可能不一样，ByteBuf取值4MB
+        // 扩充容量恰好等于阈值
+        if (minNewCapacity == threshold) {
+            return threshold;
+        }
+
+        // 超过阈值了，每次只增加阈值大小也就是4MB的容量，这就是为了防止超过阈值后再用倍增法可能会造成的内存浪费
+        if (minNewCapacity > threshold) {
+            int newCapacity = minNewCapacity / threshold * threshold;
+            if (newCapacity > maxCapacity - threshold) {
+                newCapacity = maxCapacity;
+            } else {
+                newCapacity += threshold;
+            }
+            return newCapacity;
+        }
+
+        // 没有超过阈值，采用被增法扩充，起始值为64. 
+        int newCapacity = 64;
+        while (newCapacity < minNewCapacity) {
+            newCapacity <<= 1;
+        }
+        // 获取那个不超过最大容量的扩容值
+        return Math.min(newCapacity, maxCapacity);
+    }
+```
+第五步中调整容量大小，不同实现不一样，交给子类实现
+```text
+public abstract ByteBuf capacity(int newCapacity);
+```
+
+##### 操作索引
+与索引相关的主要是设置读写索引，mark，reset等，这些操作都非常简单，只需要判断一些合法性就行。
+
+##### 重用缓冲区
+下面我们对discardReadBytes进行源码分析：
+```text
+  public ByteBuf discardReadBytes() {
+        // 检查确认buf没有被release
+        ensureAccessible();
+        // 如果可读索引为0，那么就没有可释放的字节
+        if (readerIndex == 0) {
+            return this;
+        }
+        // 如果读索引 不等于 写索引，说明缓冲区既有可抛弃的已读字节，还有尚未读取的字节
+        // 调用setBytes进行字节复制，将尚未读取的字节复制到缓冲区的起始位置，然后重新设置读写索引，写索引为复制的字节长度 writeIndex-readerIndex
+        // 读索引为0 
+        if (readerIndex != writerIndex) {
+            setBytes(0, this, readerIndex, writerIndex - readerIndex);
+            writerIndex -= readerIndex;
+            adjustMarkers(readerIndex);
+            readerIndex = 0;
+        } else {
+            // 读索引等于写索引，直接调整markedreadwriteIndex-readerIndex.
+            adjustMarkers(readerIndex);
+            writerIndex = readerIndex = 0;
+        }
+        return this;
+    }
+```
+其中的adjustMarkers方法，是在设置读写索引的同时，需要调整markedReaderIndex和markedWriteIndex,源码如下：
+```text
+protected final void adjustMarkers(int decrement) {
+        //  保存之前的markedReaderIndex
+        int markedReaderIndex = this.markedReaderIndex;
+        // 如果之前的markedReaderIndex 小于 当前要减少的数，那么markedReaderIndex直接置0，否则markedReaderIndex -= decrement.
+        // 本质意思就是 将之前的 markedReadIndex 和 markedWriteIndex直接 减少 decrement,如果结果小于0就直接置0
+        if (markedReaderIndex <= decrement) {
+            this.markedReaderIndex = 0;
+            int markedWriterIndex = this.markedWriterIndex;
+            if (markedWriterIndex <= decrement) {
+                this.markedWriterIndex = 0;
+            } else {
+                this.markedWriterIndex = markedWriterIndex - decrement;
+            }
+        } else {
+            this.markedReaderIndex = markedReaderIndex - decrement;
+            markedWriterIndex -= decrement;
+        }
+    }
+```
+
+##### skipbytes 跳过字节数
+在解码的时候，需要忽略非法的数据，或者跳过不需要读取的字节数，就使用skipBytes,只检验合法性并更改读索引。
+
+#### AbstractReferenceCountedByteBuf源码分析
+该类主要是对引用进行计数，类似JVM内存回收的引用计数器，用于跟踪对象的分配和销毁，做自动内存回收。
+下面通过看源码来看其实现
+##### 成员变量
+```text
+ // 通过原子的方式对成员变量进行更新等操作
+ private static final AtomicIntegerFieldUpdater<AbstractReferenceCountedByteBuf> refCntUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(AbstractReferenceCountedByteBuf.class, "refCnt");
+    // 标识refCnt字段在AbstractReferenceCountedByteBuf中的内存地址（和JDK实现强相关）
+    private static final long REFCNT_FIELD_OFFSET;
+
+    static {
+        long refCntFieldOffset = -1;
+        try {
+            if (PlatformDependent.hasUnsafe()) {
+                refCntFieldOffset = PlatformDependent.objectFieldOffset(
+                        AbstractReferenceCountedByteBuf.class.getDeclaredField("refCnt"));
+            }
+        } catch (Throwable t) {
+            // Ignored
+        }
+
+        REFCNT_FIELD_OFFSET = refCntFieldOffset;
+    }
+    // 跟踪对象的引用次数，用volatile是为了解决多线程的可见性问题
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile int refCnt = 1;
+```
+
+##### 对象引用计数器
+每调用一次retain方法，计数器就会加1，由于可能存在多线程并发调用的情况 ，所以他的累加操作必须是安全的，我们看实现细节：
+```text
+   public ByteBuf retain() {
+        // 自旋，操作失败再次操作
+        for (;;) {
+            int refCnt = this.refCnt;
+            if (refCnt == 0) {
+                throw new IllegalReferenceCountException(0, 1);
+            }
+            if (refCnt == Integer.MAX_VALUE) {
+                throw new IllegalReferenceCountException(Integer.MAX_VALUE, 1);
+            }
+            // 通过CAS修改计数器
+            if (refCntUpdater.compareAndSet(this, refCnt, refCnt + 1)) {
+                break;
+            }
+        }
+        return this;
+    }
+```
+与retain实现类似，但是是进行计数减1的操作的 方法 是release，需要注意的是，refCnt == 1时意味着 申请和释放相等，此时对象已经不可达，该对象需要被释放并且回收，通过
+deallocate方法类释放byteBuf对象
+```text
+  public final boolean release() {
+        for (;;) {
+            int refCnt = this.refCnt;
+            if (refCnt == 0) {
+                throw new IllegalReferenceCountException(0, -1);
+            }
+            
+            if (refCntUpdater.compareAndSet(this, refCnt, refCnt - 1)) {
+                // 对象不可达，需要释放内存
+                if (refCnt == 1) {
+                    // 交给子类去实现
+                    deallocate();
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
+```
+
+#### UnpooledHeapByteBuf源码分析
+UnpooledHeapByteBuf是基于堆内存进行分配的缓冲区，他没有基于对象池实现，意味着每次IO都会创建一个新的UnpooledHeapByteBuf,频繁进行大块内存的分配和回收会对性能造成一定的影响，
+但相比于对外内存的申请和释放，它的成本更低。相比于PooledByteBuf,UnpooledByteBuf实现原理更简单，也不容易出现管理方面的问题，因此在满足性能的情况下，推荐使用UnpooledHeapByteBuf.
+##### 成员变量
+```text
+    // 聚合了一个ByteBufAllocator 用于UnpooledHeapByteBuf的内存分配
+    private final ByteBufAllocator alloc;
+    // byte字节缓冲区
+    private byte[] array;
+    // 用于ByteBuf到ByteBuffer的转换
+    private ByteBuffer tmpNioBuf;
+```
+
+
 
  
  
