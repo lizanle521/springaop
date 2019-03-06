@@ -400,6 +400,76 @@ UnpooledHeapByteBuf是基于堆内存进行分配的缓冲区，他没有基于�
     private ByteBuffer tmpNioBuf;
 ```
 
+#### PooledByteBuf内存池原理分析
+ByteBuf内存池的实现涉及到的类和数据结构非常多，所以只从设计原理进行分析
+##### PoolArena
+Arena 就是区域的意思。PoolArena就是netty内存池的实现类.
+为了集中管理内存的分配和释放，同时提高分配和释放的性能，很多框架都会事先申请一大块内存，通过提供相应的分配和释放接口来使用内存，这样一来，对内存的分配和释放就会集中到几个类
+或者函数中，由于不再频繁的申请和释放内存，应用的性能会得到提高，这种思路下，申请的一大块内存被称为Memory Arena.
+Netty的PoolArena是由多个Chunk组成的一大块内存区域，每个Chunk由一个或者多个Page组成，因此对内存的组织和管理就变成了怎么组织和管理Chunk和page了。PoolArena定义如下：
+```text
+    final PooledByteBufAllocator parent;
+
+    private final int pageSize;
+    private final int maxOrder;
+    private final int pageShifts;
+    private final int chunkSize;
+    private final int subpageOverflowMask;
+
+    private final PoolSubpage<T>[] tinySubpagePools;
+    private final PoolSubpage<T>[] smallSubpagePools;
+
+    private final PoolChunkList<T> q050;
+    private final PoolChunkList<T> q025;
+    private final PoolChunkList<T> q000;
+    private final PoolChunkList<T> qInit;
+    private final PoolChunkList<T> q075;
+    private final PoolChunkList<T> q100;
+```
+
+##### PoolChunk
+chunk主要用于管理组织的内存的分配和释放，在Netty中，chunk中的page被构建成一个二叉树，假设一个chunk由16个page组成，那么chunk的组成方式如下图：
+![Alt chunkpagestruct](../img/chunk_page_struct.png)
+page的大小是4个字节，chunk大小是64个字节，chunk有5层，底层是用来分配所有page的内存，第四层用来分配2个page的内存
+每个节点都记录了自己在Memory Arena中的偏移地址。当一个节点代表的内存区域被分配出去以后，这个节点会被标记为已分配。这个节点下层的所有节点在后边的内存分配中都会被忽略。
+对树的遍历采用深度优先方法，选择哪个子节点遍历是随机的。
+
+##### PoolSubPage
+对于一个小于Page的内存，Netty在Page中完成分配。每个Page会被切分成大小相等的多个存储块，存储块的大小由第一个申请的内存块大小决定。
+假如一个Page是8个字节，第一次申请的是4字节，那么这个Page会被分成2块。
+**一个page只能用于分配和第一次申请内存大小相等的内存块**。假如，一个page第一次被分配了1个字节，那么page就会分成4块。如果有一个请求来申请2个字节，这个page是不能进行分配的。
+需要在一个新的page中进行分配
+page中存储区域的使用状态用一个long数组来维护。数组中的每个long的每一位用来表示一个块存储区域的占用情况：0表示未占用，1表示已经占用。
+举个例子：一个128字节的page,需要128个位。128位需要2个long类型的数据（1个long8字节，64位，2个long16字节，128位）
+类定义如下：
+```text
+final class PoolSubpage<T> {
+    final PoolChunk<T> chunk;
+    final int memoryMapIdx;
+    final int runOffset;
+    final int pageSize;
+    final long[] bitmap;
+
+    PoolSubpage<T> prev;
+    PoolSubpage<T> next;
+
+    boolean doNotDestroy;
+    int elemSize;
+    int maxNumElems;
+    int nextAvail;
+    int bitmapLength;
+    int numAvail;
+```
+
+### ByteBuf相关辅助功能介绍
+#### ByteBufHolder
+ByteBufHolder是ByteBuf容器，在Netty中，它非常有用，例如Http请求消息和应答消息都可以携带消息体，这个消息体在NIO buffer中 就是ByteBuffer,在Netty中就是ByteBuf对象
+由于不同协议的消息体可以包含不同的协议字段和功能，因此需要对ByteBuf进行包装和抽象，不同的子类可以有不同的实现。
+为了满足这些定制化的需求，Netty抽象出了ByteBufHolder,他包含了一个ByteBuf,还提供了一些其他实用的方法，使用者继承ByteBufHolder以后可以按需扩展封装自己的实现。
+ByteBufHolder继承架构如下：
+![Alt bytebufholder](../img/bytebufholder.png)
+
+
 
 
  
