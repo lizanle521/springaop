@@ -190,6 +190,16 @@ private static final InternalLogger logger = InternalLoggerFactory.getInstance(A
         }
     }
 ```
+注册channel的时候需要制定监听的网络操作位来标示channel对哪几类网络时间感兴趣，具体的定义如下：
+ * public static final int OP_READ = 1 << 0; 读操作位
+ * public static final int OP_WRITE = 1 << 2; 写操作位
+ * public static final int OP_CONNECT = 1 << 3; 客户端连接服务端操作位
+ * public static final int OP_ACCEPT = 1 << 4 ;服务端接收客户端操作位
+ AbstractNioChannel 注册的是0，说明对任何事情都不感兴趣，仅仅完成注册。注册的时候可以指定附件，后续channel接收到网络事件通知可以从
+ SelectionKey中重新获取之前的附件进行处理，此处将AbstractNioChannel的实现子类自身当作附件注册。如果注册channel成功，则返回selectionKey,
+ 通过selectionKey可以从多路复用器selector中获取channel对象。
+ 
+ 如果当前注册返回的selectionKey已经被取消，则抛出CancelledKeyException 异常。
 
 
 
