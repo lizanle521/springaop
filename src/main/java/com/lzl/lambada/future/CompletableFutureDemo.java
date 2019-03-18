@@ -1,7 +1,11 @@
 package com.lzl.lambada.future;
 
 import org.junit.Test;
+import org.springframework.util.StopWatch;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -84,11 +88,12 @@ public class CompletableFutureDemo {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
             return 1;
         });
-
+        ArrayList<Integer> list = new ArrayList<>();
         CompletableFuture<Integer> future1 = future.whenCompleteAsync((r,t) -> {
-            throw new RuntimeException(t);
+             list.add(r);
         });
         System.out.println(future1.get());
+        System.out.println(list.size() );
     }
 
     @Test
@@ -101,6 +106,64 @@ public class CompletableFutureDemo {
             return 1;
         });
         System.out.println(future1.get());
+    }
+
+    @Test
+    public void testCompletableFuture_anyof() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 1;
+        });
+
+        CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 2;
+        });
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("anyof");
+         CompletableFuture.anyOf(future, future2).join();
+         stopWatch.stop();
+
+        CompletableFuture<Integer> future3 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 1;
+        });
+
+        CompletableFuture<Integer> future4 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 2;
+        });
+        stopWatch.start("allof");
+        CompletableFuture.allOf(future3, future4).join();
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
+
+        /**
+         * -----------------------------------------
+         ms     %     Task name
+         -----------------------------------------
+         00998  033%  anyof
+         02001  067%  allof
+         anyof任意任务完成一个就返回
+         allof所有任务完成才返回
+         这种情况下用whencomplete收集结果
+         */
     }
 
 
