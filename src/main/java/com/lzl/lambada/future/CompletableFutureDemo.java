@@ -79,6 +79,30 @@ public class CompletableFutureDemo {
 
     }
 
+    @Test
+    public void testCompletableFuture_whenCompleteAsync() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            return 1;
+        });
+
+        CompletableFuture<Integer> future1 = future.whenCompleteAsync((r,t) -> {
+            throw new RuntimeException(t);
+        });
+        System.out.println(future1.get());
+    }
+
+    @Test
+    public void testCompletableFuture_handle() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            return 1;
+        });
+
+        CompletableFuture<Integer> future1 = future.handle((r,t) -> {
+            return 1;
+        });
+        System.out.println(future1.get());
+    }
+
 
     @Test
     public void testCompletableFuture_order() throws Exception{
