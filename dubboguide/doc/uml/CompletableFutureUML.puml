@@ -1,0 +1,24 @@
+@startuml
+autonumber
+
+CompletableFuture -> CompletableFuture: supplyAsync(Supplier<U> supplier)
+CompletableFuture -> CompletableFuture: asyncSupplyStage(Executor e,Supplier<U> f)
+CompletableFuture -> AsyncSupply: <<create>>
+CompletableFuture <-- AsyncSupply:
+CompletableFuture -> Executor: execute(AsyncSupply)
+CompletableFuture <-- Executor:
+
+AsyncSupply -> AsyncSupply:run
+
+newpage
+autonumber 1 1
+alt CompletableFuture != null && Supplier != null
+AsyncSupply -> Supplier: get
+AsyncSupply <-- Supplier
+AsyncSupply -> CompletableFuture: completeValue
+AsyncSupply -> CompletableFuture: doPostComplete
+note left:这是触发后续依赖的方法
+else CompletableFuture == null || Supplier == null
+
+end
+@enduml
