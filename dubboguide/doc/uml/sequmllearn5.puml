@@ -1,0 +1,12 @@
+@startuml
+hide footbox
+box "解放军部队" #LightBlue
+participant 将军
+participant 士兵
+end box
+
+participant 敌人
+
+将军 -> 士兵 : 指挥
+士兵 -> 敌人 : 消灭
+@enduml
