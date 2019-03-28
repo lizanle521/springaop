@@ -27,6 +27,10 @@ public class Hand {
         return fight(h)==1;
     }
 
+    public boolean isWeakThan(Hand h){
+        return fight(h) == -1;
+    }
+
     private int fight(Hand h){
         if(h.val == this.val){
             return 0;
@@ -35,5 +39,9 @@ public class Hand {
         }else{
             return -1;
         }
+    }
+
+    public String toString(){
+        return name[val];
     }
 }

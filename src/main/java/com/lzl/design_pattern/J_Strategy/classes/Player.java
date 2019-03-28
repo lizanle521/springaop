@@ -16,6 +16,10 @@ public class Player
         this.strategy = strategy;
     }
 
+    public Hand nextHand(){
+        return strategy.nextHand();
+    }
+
     public void win(){
         strategy.stuty(true);
         winCount++;
