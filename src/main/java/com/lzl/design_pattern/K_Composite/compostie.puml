@@ -1,0 +1,28 @@
+@startuml
+
+abstract class Entry {
+    String getName()
+    int getSize()
+    void printList()
+    void add()
+}
+
+class File extends Entry {
+    String name
+    int size
+    String getName()
+    int getSize()
+    void printList()
+}
+
+class Directory extends Entry {
+    String name
+    Entry directory
+     String getName()
+     int getSize()
+     void printList()
+     void add()
+}
+
+Directory *-- Entry
+@enduml
