@@ -1,0 +1,16 @@
+@startuml
+
+abstract class Display
+class StringDisplay
+abstract class Border
+class SideBorder
+class FullBorder
+
+Display <|-- Border
+Display <|-- StringDisplay
+Border *-- Display
+
+Border <|-- SideBorder
+Border <|-- FullBorder
+
+@enduml
