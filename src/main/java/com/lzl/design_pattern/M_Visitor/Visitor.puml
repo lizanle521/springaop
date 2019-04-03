@@ -1,0 +1,25 @@
+@startuml
+abstract class Visitor
+class ListVistor
+interface Element
+class Entry
+class File
+class Directory
+
+class Main
+
+Visitor <|-- ListVistor
+
+Element <|.. Entry
+
+Entry <|-- File
+
+Entry <|-- Directory
+
+ListVistor <.. Main : uses
+
+File <.. Main : uses
+
+Directory <.. Main :uses
+
+@enduml
