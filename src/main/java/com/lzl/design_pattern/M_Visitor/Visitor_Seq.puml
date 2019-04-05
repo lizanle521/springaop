@@ -1,0 +1,13 @@
+@startuml
+autonumber
+
+Main -> ListVistor : new
+Main -> Directory  : accept
+ListVistor <- Directory : visit
+
+ListVistor -> File: accept
+ListVistor <- File: visit
+
+ListVistor -> FileB: accept
+ListVistor <- FileB: visit
+@enduml
