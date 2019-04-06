@@ -1,0 +1,12 @@
+@startuml
+
+class Main
+class PageMaker
+class HtmlWriter
+class Database
+
+Main .. PageMaker : Uses
+PageMaker .. HtmlWriter :Uses
+PageMaker .. Database :Uses
+
+@enduml
