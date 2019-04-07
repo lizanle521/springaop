@@ -1,0 +1,21 @@
+@startuml
+autonumber
+hide footbox
+
+
+LoginFrame <- ColleagueCheckBox : colleagueChanged
+activate LoginFrame
+
+LoginFrame -> ColleagueTextField : setColleagueEnabled
+activate ColleagueTextField
+LoginFrame <-- ColleagueTextField
+deactivate ColleagueTextField
+
+
+LoginFrame -> ColleagueButton : setColleagueEnabled
+activate ColleagueButton
+LoginFrame <-- ColleagueButton
+
+deactivate ColleagueButton
+deactivate LoginFrame
+@enduml

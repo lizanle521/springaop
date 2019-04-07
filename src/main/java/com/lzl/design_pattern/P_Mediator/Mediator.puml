@@ -1,0 +1,23 @@
+@startuml
+
+interface Mediator
+interface Colleague
+
+Mediator <|.. LoginFrame
+
+Colleague <|.. ColleagueButton
+Colleague <|.. ColleagueTextField
+Colleague <|.. ColleagueCheckBox
+
+Button <|-- ColleagueButton
+TextField <|-- ColleagueTextField
+Checkbox <|-- ColleagueCheckBox
+
+ColleagueButton o.. LoginFrame
+ColleagueTextField o.. LoginFrame
+ColleagueCheckBox o.. LoginFrame
+
+ColleagueButton ..o LoginFrame
+ColleagueTextField ..o LoginFrame
+ColleagueCheckBox ..o LoginFrame
+@enduml
