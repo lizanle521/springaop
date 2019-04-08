@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
+ * 模拟场景：从多个商店查询某件商品的价格
  * @author lizanle
  * @Date 2019/3/14 18:00
  */

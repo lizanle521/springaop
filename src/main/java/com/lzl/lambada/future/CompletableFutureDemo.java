@@ -171,7 +171,7 @@ public class CompletableFutureDemo {
     public void testCompletableFuture_order() throws Exception{
         CompletableFuture<String> f1 = CompletableFuture.supplyAsync(() -> {
             try {
-                sleep(1); // TimeUnit.SECONDS.sleep(1)
+                sleep(10000L); // TimeUnit.SECONDS.sleep(1)
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -180,7 +180,7 @@ public class CompletableFutureDemo {
         CompletableFuture<String> f2 = f1.thenApply(r -> {
             System.out.println(r);
             try {
-                sleep(1);
+                sleep(10000L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

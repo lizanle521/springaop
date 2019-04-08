@@ -199,7 +199,10 @@ private static final InternalLogger logger = InternalLoggerFactory.getInstance(A
  SelectionKey中重新获取之前的附件进行处理，此处将AbstractNioChannel的实现子类自身当作附件注册。如果注册channel成功，则返回selectionKey,
  通过selectionKey可以从多路复用器selector中获取channel对象。
  
- 如果当前注册返回的selectionKey已经被取消，则抛出CancelledKeyException 异常。
+ 如果当前注册返回的selectionKey已经被取消，则抛出CancelledKeyException 异常。捕获该异常进行处理。如果是第一次捕获异常，调用多路复用器的selectNow()方法将
+ 已取消的selectionKey从多路复用器中删除掉。如果再次发生这个异常，那么就可能是jdk的bug了
+ 
+ 
 
 
 
