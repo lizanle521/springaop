@@ -1,0 +1,16 @@
+@startuml
+
+abstract class NumberGenerator
+class RandNumberGenerator
+
+interface Observer
+class DigitObeserver
+class GraphObserver
+
+NumberGenerator <|-- RandNumberGenerator
+NumberGenerator o.. Observer
+
+Observer <|-- DigitObeserver
+Observer <|-- GraphObserver
+
+@enduml
