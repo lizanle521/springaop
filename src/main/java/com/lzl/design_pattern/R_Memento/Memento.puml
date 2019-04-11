@@ -1,0 +1,11 @@
+@startuml
+
+class Main
+class Gamer
+class Memento
+
+Main o.. Memento
+Main ..> Gamer : Requests
+Gamer ..> Memento: creates
+
+@enduml
