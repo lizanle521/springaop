@@ -10,11 +10,15 @@ public class Memento {
     int money;
     ArrayList<String> fruits;
 
+    /**
+     * 窄接口，操作的信息有限
+     * @return
+     */
     public int getMoney() {
         return money;
     }
 
-    public Memento(int money) {
+    Memento(int money) {
         this.money = money;
         fruits = new ArrayList<>();
     }

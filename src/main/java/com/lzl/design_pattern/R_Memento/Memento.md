@@ -17,14 +17,3 @@
 - 当骰子点数为6的时候，主人公会得到水果
 - 当主人公没有钱的时候游戏就会结束
 
-### Memento类
-Memento类表示Gamer主人的状态
-Memento类和Gamer都位于game包下
-memento类中有两个字段，即meney和fruits. Momey 表示主人公现在所持有的金钱数目，fruits表示目前为止
-获取的水果，之所以没将money和fruits的可见性设置为private，是因为我们希望在game包下的Gamer类可以
-访问这两个字段。
-getMoney方法的作用是获取主人公当前的金钱数目。
-Memento类的构造函数可见性并非public，因此不是任何其他类都可以生成Memento类的实例。只有在同一个包
-下的其他类才能调用Memento类的构造函数
-addFruit方法用于添加所获得的水果，该方法的可见性也不是public。这是因为只有同一个包下的其他类
-才能添加水果。因此，无法从game包外部改变Memento内部的状态
