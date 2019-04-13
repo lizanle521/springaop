@@ -1,0 +1,26 @@
+@startuml
+
+interface State
+note left: 表示金库状态的接口
+
+class DayState
+note right: 表示白天的状态，实现了state接口
+
+class NightState
+note left: 表示晚上的类，实现了state接口
+
+interface Context
+note left: 表示管理金库状态，与警报中心联系的接口
+
+class SafeFrame
+note left: 实现了context接口，他内部持有按钮和画面等ui信息
+
+Context <|.. SafeFrame
+
+SafeFrame o.. State
+State <|.. DayState
+State <|.. NightState
+
+
+
+@enduml
