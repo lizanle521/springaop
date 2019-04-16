@@ -19,7 +19,18 @@ public class OptionalTest {
         Company company = new Company();
         String s1 = Optional.ofNullable(company).map(c -> c.getUserList()).map(l -> l.get(0)).map(d -> d.getAddress()).map(a -> a.getCity()).orElse("unkonw");
         System.out.println(s1);
-        Optional.ofNullable(company).map(c -> c.getUserList()).map(l -> l.get(0)).map(d -> d.getAddress()).map(a -> a.getCity()).orElseThrow(()->new RuntimeException(""));
 
+        Optional.ofNullable(s).ifPresent(System.out::println);
+
+        setName("aaa");
+
+        Optional.ofNullable(company).map(c -> c.getUserList()).map(l -> l.get(0)).map(d -> d.getAddress()).map(a -> a.getCity()).orElseThrow(()->new RuntimeException(""));
+        String s2 = "";
+
+    }
+
+    public void setName(String name) throws IllegalArgumentException {
+        String s = Optional.ofNullable(name).filter(User::isNameValid)
+                .orElseThrow(()->new IllegalArgumentException("Invalid username."));
     }
 }

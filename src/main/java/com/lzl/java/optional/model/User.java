@@ -32,4 +32,8 @@ public class User {
     public void setPasswd(String passwd) {
         this.passwd = passwd;
     }
+
+    public static boolean isNameValid(String s) {
+        return true;
+    }
 }
